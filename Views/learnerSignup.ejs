@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link rel="stylesheet" href="/Css/style.css" />
+		<title>Learner Registration</title>
+	</head>
+
+	<body>
+		<header>
+			<div class="image-container">
+				<img src="/images/strive-high-logo.svg" alt="strive-high-logo" />
+			</div>
+			<button>View Website</button>
+		</header>
+		<div class="main">
+			<h1>Register A Learner</h1>
+			<form action="/learner/signup" method="post">
+				<input type="text" name="name" placeholder="Name" required />
+				<input type="text" name="surname" placeholder="Surname" required />
+				<select id="grade" name="grade" required>
+					<option value="" disabled selected>Grade</option>
+					<option value="8">Grade 8</option>
+					<option value="9">Grade 9</option>
+					<option value="10">Grade 10</option>
+					<option value="11">Grade 11</option>
+					<option value="12">Grade 12</option></select
+				><br />
+				<button type="submit">Register</button>
+			</form>
+		</div>
+		<footer>
+			<p>
+				Developed with ❤ by Kgotso Matuludi Copyright &copy; 2024 Strive High
+			</p>
+		</footer>
+	</body>
+</html>
