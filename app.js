@@ -33,7 +33,10 @@ const connection = mysql.createConnection({
 });
 
 connection.connect((err) => {
-	if (err) throw err;
+	if (err) {
+		console.error("Error connecting to the database:", err);
+		process.exit(1);
+	}
 	console.log("Connected to the MySQL server.");
 });
 
@@ -45,13 +48,12 @@ app.get("/", (req, res) => {
 const adminRoutes = require("./Routes/admin");
 const parentRoutes = require("./Routes/parent");
 const learnerRoutes = require("./Routes/learner");
-const { log } = require("console");
-const { Session } = require("inspector");
 
 app.use("/admin", adminRoutes);
 app.use("/parent", parentRoutes);
 app.use("/learner", learnerRoutes);
 
+// Admin login routes
 app.get("/admin/login", (req, res) => {
 	res.render("adminLogin");
 });
@@ -78,6 +80,7 @@ app.get("/admin/dashboard", (req, res) => {
 	}
 });
 
+// Parent signup routes
 app.get("/parent/signup", (req, res) => {
 	res.render("parentSignup");
 });
@@ -90,12 +93,16 @@ app.post("/parent/signup", (req, res) => {
 		sql,
 		[name, surname, cellPhoneNumber, email, password],
 		(err, result) => {
-			if (err) throw err;
+			if (err) {
+				console.error("Error inserting parent:", err);
+				return res.send("Error inserting parent.");
+			}
 			res.redirect("/parent/login");
 		}
 	);
 });
 
+// Parent login routes
 app.get("/parent/login", (req, res) => {
 	res.render("parentLogin");
 });
@@ -104,7 +111,10 @@ app.post("/parent/login", (req, res) => {
 	const { email, password } = req.body;
 	const sql = "SELECT * FROM parent WHERE Email = ? AND Password = ?";
 	connection.query(sql, [email, password], (err, results) => {
-		if (err) throw err;
+		if (err) {
+			console.error("Error during parent login:", err);
+			return res.send("Error during parent login.");
+		}
 		if (results.length > 0) {
 			req.session.parent = results[0];
 			res.redirect("/learner/signup");
@@ -124,7 +134,7 @@ app.get("/parent/dashboard", (req, res) => {
 
 // Route to render learner signup form
 app.get("/learner/signup", (req, res) => {
-	if (!req.session.ParentID) {
+	if (!req.session.parent) {
 		return res.redirect("/parent/login"); // Redirect to parent login if not logged in
 	}
 	res.render("learnerSignup");
@@ -132,23 +142,38 @@ app.get("/learner/signup", (req, res) => {
 
 // Route to handle learner signup form submission
 app.post("/learner/signup", (req, res) => {
-	if (!req.session.ParentID) {
-		return res.redirect("/parent/login"); // Redirect to parent login if not logged in
+	if (!req.session.parent) {
+		return res.redirect("/parent/login");
 	}
 
 	const { name, surname, grade } = req.body;
-	const parentId = req.session.ParentID;
-	const sql =
+	const parentId = req.session.parent.ParentID;
+	const query =
 		"INSERT INTO learner (Name, Surname, Grade, ParentID) VALUES (?, ?, ?, ?)";
-	connection.query(sql, [name, surname, grade, parentId], (err, result) => {
-		if (err);
-		console.log(err);
-		res.redirect("/parent/dashboard");
+
+	connection.query(query, [name, surname, grade, parentId], (err, results) => {
+		if (err) {
+			console.error("Error inserting learner:", err);
+			return res.send("Error inserting learner.");
+		}
+		res.send("Learner registered successfully!");
+	});
+});
+
+app.get("/learners", (req, res) => {
+	const query = `
+        SELECT learner.LearnerID, learner.Name as LearnerName, learner.Surname as LearnerSurname, learner.Grade,
+               parent.Name as ParentName, parent.Surname as ParentSurname
+        FROM learner
+        JOIN parent ON learner.ParentID = parent.ParentID
+    `;
+	connection.query(query, (err, results) => {
+		if (err) throw err;
+		res.render("learners", { learners: results });
 	});
 });
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
 	console.log(`Server is running on port ${PORT}`);
-    console.log(testsess);
 });
