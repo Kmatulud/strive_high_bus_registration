@@ -21,19 +21,26 @@ body {
 	font-family: "Gilroy", sans-serif;
 	margin: 0;
 	padding: 0;
-	background-color: rgb(7, 58, 51);
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
+	background-color: rgb(14, 105, 93);
+	display: flex;
+	flex-direction: column;
+	min-height: 100vh;
+	color: rgb(224, 205, 205);
+}
+
+body .links{
+	display: flex;
+	flex-direction: column;
+	align-items: center;
 }
 
 header {
-    background-color: #FFF;
-    color: white;
-    padding: 10px 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+	background-color: #fff;
+	color: white;
+	padding: 10px 20px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
 }
 
 .image-container {
@@ -47,57 +54,64 @@ header {
 	object-fit: fill;
 }
 header button {
-    background-color: orange;
-    color: #FFF;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
+	background-color: orange;
+	color: #fff;
+	border: none;
+	padding: 10px 20px;
+	border-radius: 5px;
+	cursor: pointer;
 }
 
 header button:hover {
-     background-color: rgb(104, 70, 7);
+	background-color: rgb(104, 70, 7);
+}
+
+h1 {
+	color: #fff;
 }
 
 .main {
-    flex: 1;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-direction: column;
 }
 
 form {
-    width: 300px;
-    display: flex;
-    flex-direction: column;
+	width: 300px;
+	display: flex;
+	flex-direction: column;
+	background-color: #fff;
+	padding: 15px;
+	border-radius: 4px;
 }
 
-form input, select {
-    margin-bottom: 15px;
-    padding: 10px;
-    border: 1px solid ;
-    border-radius: 5px;
-    box-sizing: border-box;
+form input,
+select {
+	margin-bottom: 15px;
+	padding: 10px;
+	border: 1px solid;
+	border-radius: 5px;
+	box-sizing: border-box;
 }
 
 form button {
-    background-color: orange;
-    color: white;
-    border: none;
-    padding: 10px;
-    border-radius: 5px;
-    cursor: pointer;
+	background-color: orange;
+	color: white;
+	border: none;
+	padding: 10px;
+	border-radius: 5px;
+	cursor: pointer;
 }
 
 form button:hover {
-    background-color: rgb(104, 70, 7);
+	background-color: rgb(104, 70, 7);
 }
 
 footer {
-    background-color: #FFF;
-    color: black;
-    text-align: center;
-    padding: 10px 0;
-    margin-top: auto;
+	background-color: #fff;
+	color: black;
+	text-align: center;
+	padding: 10px 0;
+	margin-top: auto;
 }

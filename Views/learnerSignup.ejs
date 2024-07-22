@@ -16,9 +16,20 @@
 		</header>
 		<div class="main">
 			<h1>Register A Learner</h1>
-			<form>
-				<input type="text" name="name" placeholder="Name" required />
-				<input type="text" name="surname" placeholder="Surname" required />
+			<form action="" method="POST">
+				<input
+					type="text"
+					name="name_surname"
+					placeholder="Name and Surname"
+					required
+				/>
+				<input
+					type="number"
+					name="cellPhoneNumber"
+					placeholder="Cell Phone Number"
+					required
+				/>
+
 				<select id="grade" name="grade" required>
 					<option value="" disabled selected>Grade</option>
 					<option value="8">Grade 8</option>
@@ -27,7 +38,8 @@
 					<option value="11">Grade 11</option>
 					<option value="12">Grade 12</option></select
 				><br />
-				<button type="submit">Register</button>
+				<button type="submit">Register Learner</button>
+				<a href="/admin/Dashboard">See Dashboard</a>
 			</form>
 		</div>
 		<footer>

@@ -4,6 +4,7 @@ const session = require("express-session");
 const path = require("path");
 const mysql = require("mysql2");
 const dotenv = require("dotenv");
+const morgan = require("morgan");
 
 dotenv.config();
 
@@ -13,6 +14,7 @@ const app = express();
 app.set("view engine", "ejs");
 
 // Middleware
+// app.use(morgan())
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, "Public")));
@@ -45,24 +47,27 @@ app.get("/", (req, res) => {
 	res.render("index");
 });
 
-const adminRoutes = require("./Routes/admin");
-const parentRoutes = require("./Routes/parent");
-const learnerRoutes = require("./Routes/learner");
+app.get("/admin/dashboard", (req, res) => {
+	if (req.session.admin) {
+		res.render("dashboard", { admin: req.session.admin });
+	} else {
+		res.redirect("/admin/dashboard");
+	}
+});
 
-app.use("/admin", adminRoutes);
-app.use("/parent", parentRoutes);
-app.use("/learner", learnerRoutes);
-
-// Admin login routes
 app.get("/admin/login", (req, res) => {
 	res.render("adminLogin");
 });
 
 app.post("/admin/login", (req, res) => {
-	const { email, password } = req.body;
-	const sql = "SELECT * FROM administrator WHERE Email = ? AND Password = ?";
-	connection.query(sql, [email, password], (err, results) => {
-		if (err) throw err;
+	const { initials_surname, email, password } = req.body;
+	const sql =
+		"SELECT * FROM administrator WHERE Initials_Surname = ? AND Email = ? AND Password = ?";
+	connection.query(sql, [initials_surname, email, password], (err, results) => {
+		if (err) {
+			console.error("Error during admin login:", err);
+			return res.send("Error during admin login.");
+		}
 		if (results.length > 0) {
 			req.session.admin = results[0];
 			res.redirect("/admin/dashboard");
@@ -72,26 +77,17 @@ app.post("/admin/login", (req, res) => {
 	});
 });
 
-app.get("/admin/dashboard", (req, res) => {
-	if (req.session.admin) {
-		res.render("admin_dashboard", { admin: req.session.admin });
-	} else {
-		res.redirect("/admin/login");
-	}
-});
-
-// Parent signup routes
 app.get("/parent/signup", (req, res) => {
 	res.render("parentSignup");
 });
 
 app.post("/parent/signup", (req, res) => {
-	const { name, surname, cellPhoneNumber, email, password } = req.body;
-	const sql =
-		"INSERT INTO parent (Name, Surname, CellPhoneNumber, Email, Password) VALUES (?, ?, ?, ?, ?)";
+	const { name_surname, cellPhoneNumber, email, password } = req.body;
+	const query =
+		"INSERT INTO parent (Name_Surname, CellPhoneNumber, Email, Password) VALUES (?, ?, ?, ?)";
 	connection.query(
-		sql,
-		[name, surname, cellPhoneNumber, email, password],
+		query,
+		[name_surname, cellPhoneNumber, email, password],
 		(err, result) => {
 			if (err) {
 				console.error("Error inserting parent:", err);
@@ -102,15 +98,15 @@ app.post("/parent/signup", (req, res) => {
 	);
 });
 
-// Parent login routes
 app.get("/parent/login", (req, res) => {
 	res.render("parentLogin");
 });
 
 app.post("/parent/login", (req, res) => {
-	const { email, password } = req.body;
-	const sql = "SELECT * FROM parent WHERE Email = ? AND Password = ?";
-	connection.query(sql, [email, password], (err, results) => {
+	const { name_surname, email, password } = req.body;
+	const query =
+		"SELECT * FROM parent WHERE Name_Surname =? AND Email = ? AND Password = ?";
+	connection.query(query, [name_surname, email, password], (err, results) => {
 		if (err) {
 			console.error("Error during parent login:", err);
 			return res.send("Error during parent login.");
@@ -132,7 +128,6 @@ app.get("/parent/dashboard", (req, res) => {
 	}
 });
 
-// Route to render learner signup form
 app.get("/learner/signup", (req, res) => {
 	if (!req.session.parent) {
 		return res.redirect("/parent/login"); // Redirect to parent login if not logged in
@@ -140,35 +135,47 @@ app.get("/learner/signup", (req, res) => {
 	res.render("learnerSignup");
 });
 
-// Route to handle learner signup form submission
 app.post("/learner/signup", (req, res) => {
 	if (!req.session.parent) {
 		return res.redirect("/parent/login");
 	}
 
-	const { name, surname, grade } = req.body;
+	const { name_surname, cellPhoneNumber, grade } = req.body;
 	const parentId = req.session.parent.ParentID;
-	const query =
-		"INSERT INTO learner (Name, Surname, Grade, ParentID) VALUES (?, ?, ?, ?)";
 
-	connection.query(query, [name, surname, grade, parentId], (err, results) => {
-		if (err) {
-			console.error("Error inserting learner:", err);
-			return res.send("Error inserting learner.");
+	// Ensure all required fields are present
+	if (!name_surname || !cellPhoneNumber || !grade || !parentId) {
+		return res.status(400).send("All fields are required.");
+	}
+
+	const query =
+		"INSERT INTO learner (Name_Surname, CellPhoneNumber, Grade, ParentID) VALUES (?, ?, ?, ?)";
+
+	connection.query(
+		query,
+		[name_surname, cellPhoneNumber, grade, parentId],
+		(err, results) => {
+			if (err) {
+				console.error("Error inserting learner:", err);
+				return res.send("Error inserting learner.");
+			}
+			res.send("Learner registered successfully!");
 		}
-		res.send("Learner registered successfully!");
-	});
+	);
 });
 
 app.get("/learners", (req, res) => {
 	const query = `
-        SELECT learner.LearnerID, learner.Name as LearnerName, learner.Surname as LearnerSurname, learner.Grade,
-               parent.Name as ParentName, parent.Surname as ParentSurname
+        SELECT learner.LearnerID, learner.Name_Surname as LearnerNameSurname, learner.CellPhoneNumber as LearnerCellPhoneNumber, learner.Grade,
+               parent.Name_Surname as ParentNameSurname
         FROM learner
         JOIN parent ON learner.ParentID = parent.ParentID
     `;
 	connection.query(query, (err, results) => {
-		if (err) throw err;
+		if (err) {
+			console.error("Error fetching learners:", err);
+			return res.send("Error fetching learners.");
+		}
 		res.render("learners", { learners: results });
 	});
 });
