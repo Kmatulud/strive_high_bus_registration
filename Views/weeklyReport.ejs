@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Weekly MIS Report</title>
+		<link rel="stylesheet" href="/Css/style.css" />
+	</head>
+	<body>
+		<header>
+			<div class="image-container">
+				<img src="/images/strive-high-logo.svg" alt="strive-high-logo" />
+			</div>
+			<button>View Website</button>
+		</header>
+		<h1>Weekly Report</h1>
+
+		<!-- Format the date -->
+		<% const formatDate = (date) => { const options = { year: 'numeric', month:
+		'short', day: 'numeric' }; return new Date(date).toLocaleDateString('en-GB',
+		options); } %>
+
+		<div class="search">
+			<form action="/search-reports/weekly" method="POST">
+				<input
+					type="text"
+					name="searchTerm"
+					placeholder="Search by name or phone"
+				/>
+				<button type="submit">Search</button>
+			</form>
+		</div>
+		<table border="1">
+			<thead>
+				<tr>
+					<th>ID</th>
+					<th>Name and Surname</th>
+					<th>Grade</th>
+					<th>Cell Phone Number</th>
+					<td>Registration Date</td>
+					<th>Morning Use</th>
+					<th>Afternoon use</th>
+					<th>Status</th>
+					<th>Actions</th>
+				</tr>
+			</thead>
+			<tbody>
+				<% busUsage.forEach(bus => { %>
+				<tr>
+					<td><%= bus.LearnerID %></td>
+					<td><%= bus.Name_Surname %></td>
+					<td><%= bus.Grade %></td>
+					<td><%= bus.CellPhoneNumber %></td>
+					<td><%= formatDate(bus.RegistrationDate) %></td>
+					<td><%= bus.morning_use %></td>
+					<td><%= bus.afternoon_use %></td>
+					<td><%= bus.Status %></td>
+					<td>
+						<form action="/admin/action" method="post" style="display: inline">
+							<input
+								type="hidden"
+								name="learnerID"
+								value="<%= bus.LearnerID %>"
+							/>
+							<button type="submit" name="action" value="accept">
+								Approve
+							</button>
+							<button type="submit" name="action" value="waitlist">
+								Put on Waiting List
+							</button>
+							<button type="submit" name="action" value="delete">Delete</button>
+						</form>
+					</td>
+				</tr>
+				<% }); %>
+			</tbody>
+		</table>
+		<a href="/">Logout</a>
+		<footer>
+			<p>
+				Developed with ❤ by Kgotso Matuludi Copyright &copy; 2024 Strive High
+			</p>
+		</footer>
+	</body>
+</html>

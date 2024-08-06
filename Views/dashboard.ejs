@@ -4,9 +4,24 @@
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<link rel="stylesheet" href="/Css/style.css" />
-		<title>Parent Signup</title>
+		<title>Admin Dashboard</title>
+		<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+		<style>
+			.chartContainer {
+				position: relative;
+				display: grid;
+				grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+				gap: 20px;
+				padding: 16px;
+				margin: 32px 0;
+			}
+			.chartContainer canvas {
+				display: block;
+				width: fit-content !important;
+				height: 300px !important;
+			}
+		</style>
 	</head>
-
 	<body>
 		<header>
 			<div class="image-container">
@@ -14,15 +29,216 @@
 			</div>
 			<button>View Website</button>
 		</header>
-		<h1>Welcome,</h1>
-		<nav>
-			<ul>
-				<li><a href="/reports/daily">Daily Report</a></li>
-				<li><a href="/reports/weekly">Weekly Report</a></li>
-				<li><a href="/reports/monthly-trend">Monthly Trend Report</a></li>
-				<li><a href="/logout">Logout</a></li>
-			</ul>
-		</nav>
+		<h1>Admin Dashboard</h1>
+		<div class="search">
+			<form action="/admin/dashboard" method="POST">
+				<input
+					type="text"
+					name="searchTerm"
+					placeholder="Search by name or phone"
+				/>
+				<button type="submit">Search</button>
+			</form>
+		</div>
+
+		<h1>Admin Dashboard</h1>
+		<h2>Registered Learners</h2>
+
+		<table border="1">
+			<thead>
+				<tr>
+					<th>ID</th>
+					<th>Name</th>
+					<th>Phone Number</th>
+					<th>Grade</th>
+					<th>Registration Date</th>
+					<th>Status</th>
+					<th>Actions</th>
+				</tr>
+			</thead>
+			<tbody>
+				<% if (learners.length > 0) { %> <% learners.forEach(learner => { %>
+				<tr>
+					<td><%= learner.LearnerID %></td>
+					<td><%= learner.Name_Surname %></td>
+					<td><%= learner.CellPhoneNumber %></td>
+					<td><%= learner.Grade %></td>
+					<td><%= learner.RegistrationDate %></td>
+					<td><%= learner.Status %></td>
+					<td>
+						<form action="/admin/action" method="post" style="display: inline">
+							<input
+								type="hidden"
+								name="learnerID"
+								value="<%= learner.LearnerID %>"
+							/>
+							<button type="submit" name="action" value="accept">Approve</button>
+							<button type="submit" name="action" value="waitlist">
+								Put on Waiting List
+							</button>
+							<button type="submit" name="action" value="delete">Delete</button>
+						</form>
+					</td>
+				</tr>
+				<% }) %> <% } else { %>
+				<tr>
+					<td colspan="7">No registered learners</td>
+				</tr>
+				<% } %>
+			</tbody>
+		</table>
+
+		<!-- Bar and Pie Chart -->
+		<div class="chartContainer">
+			<canvas id="combinedChart"></canvas>
+			<canvas id="pieChart"></canvas>
+		</div>
+
+		<script>
+			// Bar Chart
+			const ctx = document.getElementById("combinedChart").getContext("2d");
+			const combinedChart = new Chart(ctx, {
+				type: "bar",
+				data: {
+					labels: ["Monthly", "Weekly", "Daily"],
+					datasets: [
+						{
+							label: "Monthly Registrations",
+							data: JSON.parse("<%= monthlyData %>"),
+							backgroundColor: "orange",
+							color: "#fff",
+						},
+						{
+							label: "Weekly Registrations",
+							data: JSON.parse("<%= weeklyData %>"),
+							backgroundColor: "rgba(54, 162, 235, 1)",
+						},
+						{
+							label: "Daily Registrations",
+							data: JSON.parse("<%= dailyData %>"),
+							backgroundColor: "white",
+						},
+					],
+				},
+				options: {
+					responsive: true,
+					maintainAspectRatio: true,
+					scales: {
+						x: {
+							barPercentage: 0.5,
+							categoryPercentage: 0.8,
+							ticks: {
+								autoSkip: true,
+								maxRotation: 45,
+								minRotation: 45,
+								color: "#fff",
+								font: {
+									family: "Arial",
+									size: 17,
+									style: "normal",
+								},
+							},
+						},
+						y: {
+							beginAtZero: true,
+							ticks: {
+								color: "#fff",
+								font: {
+									family: "Arial",
+									size: 17,
+									color: "#ff0000",
+									style: "normal",
+								},
+							},
+						},
+					},
+					plugins: {
+						title: {
+							display: true,
+							text: "Registrations Overview",
+							color: "white"
+						},
+						legend: {
+							display: true,
+							position: "top",
+							labels: {
+								color: "#fff",
+								font: {
+									family: "Arial",
+									size: 14,
+									style: "normal",
+								},
+							},
+						},
+						tooltip: {
+							mode: "index",
+							intersect: false,
+						},
+					},
+					interaction: {
+						mode: "nearest",
+						axis: "x",
+						intersect: false,
+					},
+				},
+			});
+
+			// Pie Chart
+			const ctxPie = document.getElementById("pieChart").getContext("2d");
+			const pieChart = new Chart(ctxPie, {
+				type: "pie",
+				data: {
+					labels: ["Approved", "Waiting List"],
+					datasets: [
+						{
+							data: "<%= acceptedCount %>, <%= waitingListCount %>",
+							backgroundColor: [
+								"purple",
+								"brown",
+							],
+						},
+					],
+				},
+				options: {
+					plugins: {
+						title: {
+							display: true,
+							text: "Learner Status",
+							color: "white"
+						},
+						legend: {
+							labels: {
+								color: "#ffffff",
+							},
+						},
+					},
+				},
+			});
+		</script>
+
+		<h2>Generate MIS Reports</h2>
+		<form
+			action="/generate-reports/daily"
+			method="post"
+			style="display: inline"
+		>
+			<button type="submit">Generate Daily Report</button>
+		</form>
+		<form
+			action="/generate-reports/weekly"
+			method="post"
+			style="display: inline"
+		>
+			<button type="submit">Generate Weekly Report</button>
+		</form>
+		<form
+			action="/generate-reports/monthly"
+			method="post"
+			style="display: inline"
+		>
+			<button type="submit">Generate Monthly Report</button>
+		</form>
+		<a href="/">Logout</a>
 		<footer>
 			<p>
 				Developed with ❤ by Kgotso Matuludi Copyright &copy; 2024 Strive High

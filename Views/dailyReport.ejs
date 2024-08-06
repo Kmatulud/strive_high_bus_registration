@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Daily MIS Report</title>
+		<link rel="stylesheet" href="/Css/style.css" />
+		<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+		<style>
+			.chartContainer {
+				position: relative;
+				display: grid;
+				grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+				gap: 20px;
+				padding: 16px;
+				margin: 32px 0;
+			}
+			.chartContainer canvas {
+				display: block;
+				width: fit-content !important;
+				height: 300px !important;
+			}
+		</style>
+	</head>
+	<body>
+		<header>
+			<div class="image-container">
+				<img src="/images/strive-high-logo.svg" alt="strive-high-logo" />
+			</div>
+			<button>View Website</button>
+		</header>
+		<h1>Daily Report</h1>
+		<div class="search">
+			<form action="/search-reports/daily" method="POST">
+				<input
+					type="text"
+					name="searchTerm"
+					placeholder="Search by name or phone"
+				/>
+				<button type="submit">Search</button>
+			</form>
+		</div>
+		<!-- <h2>Waiting List</h2>
+
+		<!-- Format the date -->
+		<% const formatDate = (date) => { const options = { year: 'numeric', month:
+		'short', day: 'numeric' }; return new Date(date).toLocaleDateString('en-GB',
+		options); } %>
+
+		<table border="1">
+			<thead>
+				<tr>
+					<th>ID</th>
+					<th>Name</th>
+					<th>Phone Number</th>
+					<th>Grade</th>
+					<th>Registration Date</th>
+					<th>Status</th>
+					<th>Actions</th>
+				</tr>
+			</thead>
+			<tbody>
+				<% if (waitingList.length > 0) { %> <% waitingList.forEach(learner => {
+				%>
+				<tr>
+					<td><%= learner.LearnerID %></td>
+					<td><%= learner.Name_Surname %></td>
+					<td><%= learner.CellPhoneNumber %></td>
+					<td><%= learner.Grade %></td>
+					<td><%= formatDate(learner.RegistrationDate) %></td>
+					<td><%= learner.Status %></td>
+					<td>
+						<form action="/admin/action" method="post" style="display: inline">
+							<input
+								type="hidden"
+								name="learnerID"
+								value="<%= learner.LearnerID %>"
+							/>
+							<button type="submit" name="action" value="accept">
+								Approve
+							</button>
+							<button type="submit" name="action" value="waitlist">
+								Put on Waiting List
+							</button>
+							<button type="submit" name="action" value="delete">Delete</button>
+						</form>
+					</td>
+				</tr>
+				<% }) %> <% } else { %>
+				<tr>
+					<td colspan="7">No registered learners</td>
+				</tr>
+				<% } %>
+			</tbody>
+		</table>
+		<h2>Bus Usage</h2>
+		<table border="1">
+			<thead>
+				<tr>
+					<th>ID</th>
+					<th>Name and Surname</th>
+					<th>Grade</th>
+					<th>Cell Phone Number</th>
+					<td>Registration Date</td>
+					<th>Morning Use</th>
+					<th>Afternoon use</th>
+					<th>Status</th>
+					<th>Actions</th>
+				</tr>
+			</thead>
+			<tbody>
+				<% busUsage.forEach(bus => { %>
+				<tr>
+					<td><%= bus.LearnerID %></td>
+					<td><%= bus.Name_Surname %></td>
+					<td><%= bus.Grade %></td>
+					<td><%= bus.CellPhoneNumber %></td>
+					<td><%= formatDate(bus.RegistrationDate) %></td>
+					<td><%= bus.morning_use %></td>
+					<td><%= bus.afternoon_use %></td>
+					<td><%= bus.Status %></td>
+					<td>
+						<form action="/admin/action" method="post" style="display: inline">
+							<input
+								type="hidden"
+								name="learnerID"
+								value="<%= bus.LearnerID %>"
+							/>
+							<button type="submit" name="action" value="accept">
+								Approve
+							</button>
+							<button type="submit" name="action" value="waitlist">
+								Put on Waiting List
+							</button>
+							<button type="submit" name="action" value="delete">Delete</button>
+						</form>
+					</td>
+				</tr>
+				<% }); %>
+			</tbody>
+		</table>
+		<!-- End of table -->
+		<!-- Charts
+		<div class="chartContainer">
+			<canvas id="waitingListChart"></canvas>
+			<canvas id="dailyUsageChart"></canvas>
+		</div>
+
+		<script>
+			// Data for Waiting List Chart
+			const ctxPie = document
+				.getElementById("waitingListChart")
+				.getContext("2d");
+			const pieChart = new Chart(ctxPie, {
+				type: "pie",
+				data: {
+					labels: ["Waiting List"], // Add more labels if needed
+					datasets: [
+						{
+							data: "[<%= waitingList %>]",
+							backgroundColor: ["purple", "green"], // Adjust colors as needed
+						},
+					],
+				},
+				options: {
+					plugins: {
+						title: {
+							display: true,
+							text: "Learners on Waiting List",
+							color: "white",
+						},
+						legend: {
+							labels: {
+								color: "#ffffff",
+							},
+						},
+					},
+				},
+			});
+
+			// Data for Bus Usage Chart
+			const ctxBar = document
+				.getElementById("dailyUsageChart")
+				.getContext("2d");
+			const barChart = new Chart(ctxBar, {
+				type: "bar",
+				data: {
+					labels: "busNumbers",
+					datasets: [
+						{
+							label: "Morning",
+							data: "[<%= busUsage %>]",
+							backgroundColor: "blue",
+						},
+					],
+				},
+				options: {
+					responsive: true,
+					scales: {
+						x: {
+							stacked: true,
+						},
+						y: {
+							beginAtZero: true,
+						},
+					},
+					plugins: {
+						title: {
+							display: true,
+							text: "Bus Usage: Morning vs Afternoon",
+							color: "white",
+						},
+						legend: {
+							labels: {
+								color: "#ffffff",
+							},
+						},
+					},
+				},
+			});
+		</script> -->
+
+		<a href="/">Logout</a>
+		<footer>
+			<p>
+				Developed with ❤ by Kgotso Matuludi Copyright &copy; 2024 Strive High
+			</p>
+		</footer>
+	</body>
+</html>

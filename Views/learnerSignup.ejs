@@ -6,7 +6,6 @@
 		<link rel="stylesheet" href="/Css/style.css" />
 		<title>Learner Registration</title>
 	</head>
-
 	<body>
 		<header>
 			<div class="image-container">
@@ -17,35 +16,191 @@
 		<div class="main">
 			<h1>Register A Learner</h1>
 			<form action="" method="POST">
-				<input
-					type="text"
-					name="name_surname"
-					placeholder="Name and Surname"
-					required
-				/>
-				<input
-					type="number"
-					name="cellPhoneNumber"
-					placeholder="Cell Phone Number"
-					required
-				/>
-
-				<select id="grade" name="grade" required>
-					<option value="" disabled selected>Grade</option>
-					<option value="8">Grade 8</option>
-					<option value="9">Grade 9</option>
-					<option value="10">Grade 10</option>
-					<option value="11">Grade 11</option>
-					<option value="12">Grade 12</option></select
-				><br />
+				<!-- <div class="form-container"> -->
+					<!-- <div class="personal-details"> -->
+						<input
+							type="text"
+							name="name_surname"
+							placeholder="Learner's name and surname:"
+							required
+						/>
+						<input
+							type="number"
+							name="cellPhoneNumber"
+							placeholder="Cell Phone Number"
+							required
+						/>
+						<select id="grade" name="grade" required>
+							<option value="" disabled selected>Grade</option>
+							<option value="8">Grade 8</option>
+							<option value="9">Grade 9</option>
+							<option value="10">Grade 10</option>
+							<option value="11">Grade 11</option>
+							<option value="12">Grade 12</option>
+						</select>
+						<label for="registration_date">Date of Registration:</label>
+						<input
+							type="date"
+							id="registration_date"
+							name="registration_date"
+							required
+						/>
+					<!-- </div> -->
+					<!-- <div class="bus-info"> -->
+						<!-- <label for="busRoute">Choose a bus route:</label>
+						<br />
+						<label>
+							<input type="radio" name="busRoute" value="1" required />
+							Rooihuiskraal - 1
+						</label>
+						<label>
+							<input type="radio" name="busRoute" value="2" required />
+							Wierdapark - 2
+						</label>
+						<label>
+							<input type="radio" name="busRoute" value="3" required />
+							Centurion - 3
+						</label>
+						<br />
+						<div class="bus-info-part2">
+							<label for="morningLocation">Morning Pickup Point:</label>
+							<select id="morningLocation" name="morningLocation" required>
+								<option value="" disabled selected>
+									Select Morning Pickup Point
+								</option>
+								<option value="">Corner of Panorama and Marabou Road</option>
+								<option value="">
+									Corner of Kolgansstraat and Skimmerstraat
+								</option>
+								<option value="">
+									Corner of Reddersburg Street and Mafeking Drive
+								</option>
+								<option value="">
+									Corner of Theuns van Niekerkstraat and Roosmarynstraat
+								</option>
+								<option value="">
+									Corner of Jasper Drive and Tieroog Street
+								</option>
+								<option value="">
+									Corner of Louise Street and Von Willich Drive
+								</option>
+							</select>
+							<label for="morningPickUpTime">Pick Up Time:</label>
+							<input
+								type="text"
+								id="morningPickUpTime"
+								name="morningPickUpTime"
+								readonly
+							/>
+							<label for="morningPickUpNumber">Pick Up Number:</label>
+							<input
+								type="text"
+								id="morningPickUpNumber"
+								name="morningPickUpNumber"
+								readonly
+							/>
+							<label for="MorningBusNumber">Your Morning Bus Number:</label>
+							<input
+								type="text"
+								id="MorningBusNumber"
+								name="MorningBusNumber"
+								readonly
+							/>
+						</div>
+						<label for="afternoonLocation">Afternoon Dropoff Point:</label>
+						<select id="afternoonLocation" name="afternoonLocation" required>
+							<option value="" disabled selected>
+								Select Afternoon Dropoff Point
+							</option>
+							<option value="">Corner of Panorama and Marabou Road</option>
+							<option value="">
+								Corner of Kolgansstraat and Skimmerstraat
+							</option>
+							<option value="">
+								Corner of Reddersburg Street and Mafeking Drive
+							</option>
+							<option value="">
+								Corner of Theuns van Niekerkstraat and Roosmarynstraat
+							</option>
+							<option value="">
+								Corner of Jasper Drive and Tieroog Street
+							</option>
+							<option value="">
+								Corner of Louise Street and Von Willich Drive
+							</option>
+						</select>
+						<label for="afternoonDropoffTime">Dropoff Time:</label>
+						<input
+							type="text"
+							id="afternoonDropoffTime"
+							name="afternoonDropoffTime"
+							readonly
+						/>
+						<label for="afternoonDropOffNumber">DropOff Number:</label>
+						<input
+							type="text"
+							id="afternoonDropOffNumber"
+							name="afternoonDropOffNumber"
+							readonly
+						/>
+						<label for="AfternoonBusNumber">Your Afternoon Bus Number:</label>
+						<input
+							type="text"
+							id="AfternoonBusNumber"
+							name="AfternoonBusNumber"
+							readonly
+						/>
+					<!- </div> -->
+				<!-- </div> -->
+				<br /> 
 				<button type="submit">Register Learner</button>
-				<a href="/admin/Dashboard">See Dashboard</a>
 			</form>
+			<a href="/">Logout</a>
 		</div>
 		<footer>
 			<p>
 				Developed with ❤ by Kgotso Matuludi Copyright &copy; 2024 Strive High
 			</p>
 		</footer>
+
+		 <script>
+        document.getElementById('morningLocation').addEventListener('change', function () {
+            const location = this.value;
+
+            fetch('/fetch-pickup-data', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: `location=${location}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('morningPickUpTime').value = data.PickupTime;
+                document.getElementById('morningPickUpNumber').value = data.PickUpNumber;
+                document.getElementById('MorningBusNumber').value = data.RouteNumber;
+            })
+            .catch(error => console.log(error));
+        });
+
+        document.getElementById('afternoonLocation').addEventListener('change', function () {
+            const location = this.value;
+
+            fetch('/fetch-dropoff-data', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: `location=${location}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('afternoonDropoffTime').value = data.DropoffTime;
+                document.getElementById('afternoonDropOffNumber').value = data.DropOffNumber;
+                document.getElementById('AfternoonBusNumber').value = data.RouteNumber;
+            })
+            .catch(error => console.log(error));
+        });
+    </script>
 	</body>
 </html>

@@ -25,6 +25,7 @@ body {
 	display: flex;
 	flex-direction: column;
 	min-height: 100vh;
+	width: 100%;
 	color: rgb(224, 205, 205);
 }
 
@@ -70,6 +71,12 @@ h1 {
 	color: #fff;
 }
 
+label{
+	color: #7c5050;
+	display: block;
+    margin-bottom: 5px;
+}
+
 .main {
 	display: flex;
 	justify-content: center;
@@ -78,21 +85,40 @@ h1 {
 }
 
 form {
-	width: 300px;
+    background-color: #fff;
+    padding: 20px;
 	display: flex;
 	flex-direction: column;
-	background-color: #fff;
-	padding: 15px;
-	border-radius: 4px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 30%;
 }
 
-form input,
-select {
-	margin-bottom: 15px;
-	padding: 10px;
-	border: 1px solid;
-	border-radius: 5px;
-	box-sizing: border-box;
+table{
+	margin: 0 16px;
+}
+
+.search form{
+	display: flex;
+	align-items: center;
+	justify-content: flex-start;
+	flex-direction: row;
+	padding: 10px 20px;
+	width: 30%;
+	margin: 32px 16px;
+}
+
+.search form button{
+	width: fit-content;
+}
+
+.search form input,
+.search form input:focus,
+.search form input:active{
+	width: 100%;
+	border: none;
+	outline: none;
+	margin: 0;
 }
 
 form button {
@@ -104,6 +130,30 @@ form button {
 	cursor: pointer;
 }
 
+input, select {
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+input[type="radio"]{
+	margin: 10px;
+}
+
+/* a tags */
+a{
+    color: blue;
+    text-decoration: none;
+    font-weight: bold;
+	font-size: 1.3rem;
+}
+
+a:hover {
+    color: rgb(3, 78, 3);
+}
+
+/* form */
 form button:hover {
 	background-color: rgb(104, 70, 7);
 }
