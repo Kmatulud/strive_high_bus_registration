@@ -103,58 +103,58 @@ app.get("/parent/dashboard", (req, res) => {
 
 // Function to send acknowledgment email for approved applications
 const sendApprovedEmail = (parentEmail, learnerName) => {
-  const transporter = nodemailer.createTransport({
+	const transporter = nodemailer.createTransport({
 		host: "smtp-relay.sendinblue.com",
 		port: 587,
 		auth: {
-			user: process.env.SENDINBLUE_USER,
-			pass: process.env.SENDINBLUE_PASSWORD,
+			user: "7f9f58001@smtp-brevo.com",
+			pass: "VMyPbUYzRONrXhLA",
 		},
 	});
 
-  const mailOptions = {
-		from: '"Strive High Secondary School" strive@high.com',
+	const mailOptions = {
+		from: '"Strive High Secondary School" princessmakgotso@gmail.com',
 		to: parentEmail,
 		subject: "Learner Application Approved",
 		text: `Dear Parent, \n\nCongratulations! The application for ${learnerName} has been approved. Please proceed with the next steps on our platform.\n\nBest regards,\nSchool Name`,
 		html: `<p>Dear Parent,</p><p>Congratulations! The application for <strong>${learnerName}</strong> has been approved. Please proceed with the next steps on our platform.</p><p>Best regards,<br>Strive High Secondary School</p>`,
 	};
 
-  transporter.sendMail(mailOptions, (err, info) => {
-    if (err) {
-      console.error("Error sending approved email:", err);
-    } else {
-      console.log("Approval email sent:", info.response);
-    }
-  });
+	transporter.sendMail(mailOptions, (err, info) => {
+		if (err) {
+			console.error("Error sending approved email:", err);
+		} else {
+			console.log("Approval email sent:", info.response);
+		}
+	});
 };
 
 // Function to send email if the learner is on the waiting list
 const sendWaitingListEmail = (parentEmail, learnerName) => {
-  const transporter = nodemailer.createTransport({
+	const transporter = nodemailer.createTransport({
 		host: "smtp-relay.sendinblue.com",
 		port: 587,
 		auth: {
-			user: process.env.SENDINBLUE_USER,
-			pass: process.env.SENDINBLUE_PASSWORD,
+			user: "7f9f58001@smtp-brevo.com",
+			pass: "VMyPbUYzRONrXhLA",
 		},
 	});
 
-  const mailOptions = {
-		from: '"Strive High Secondary School" strive@high.com',
+	const mailOptions = {
+		from: '"Strive High Secondary School" princessmakgotso@gmail.com',
 		to: parentEmail,
 		subject: "Learner Application on Waiting List",
 		text: `Dear Parent, \n\nWe have received the application for ${learnerName}. Currently, it is placed on the waiting list. We will notify you once the status changes.\n\nBest regards,\nSchool Name`,
 		html: `<p>Dear Parent,</p><p>We have received the application for <strong>${learnerName}</strong>. Currently, it is placed on the waiting list. We will notify you once the status changes.</p><p>Best regards,<br>Strive High Secondary School</p>`,
 	};
 
-  transporter.sendMail(mailOptions, (err, info) => {
-    if (err) {
-      console.error("Error sending waiting list email:", err);
-    } else {
-      console.log("Waiting list email sent:", info.response);
-    }
-  });
+	transporter.sendMail(mailOptions, (err, info) => {
+		if (err) {
+			console.error("Error sending waiting list email:", err);
+		} else {
+			console.log("Waiting list email sent:", info.response);
+		}
+	});
 };
 
 app.get("/learner/signup", (req, res) => {
@@ -162,9 +162,10 @@ app.get("/learner/signup", (req, res) => {
 });
 
 // Learner actions
+// Learner actions
 app.post("/learner/signup", (req, res) => {
 	if (!req.session || !req.session.parent) return res.redirect("/parent/login");
-	if (!req.session || !req.session.admin) return res.redirect("/admin/login");
+
 	const {
 		name_surname,
 		cellPhoneNumber,
@@ -244,11 +245,30 @@ app.post("/learner/signup", (req, res) => {
 							console.error("Error updating bus capacity:", err);
 							return res.redirect("/learner/signup?status=error");
 						}
-					});
-				}
 
-				// Successful registration, redirect with success status
-				return res.redirect(`/learner/${learnerId}/details?status=success`);
+						// Insert into busregistration table
+						const insertBusRegistrationQuery = `
+                            INSERT INTO busregistration (LearnerID, RouteID, PickupID, DropoffID) 
+                            VALUES (?, ?, ?, ?)
+                        `;
+						connection.query(
+							insertBusRegistrationQuery,
+							[learnerId, busRoute, morningLocation, afternoonLocation],
+							(err) => {
+								if (err) {
+									console.error("Error registering bus:", err);
+									return res.redirect("/learner/signup?status=error");
+								}
+								return res.redirect(
+									`/learner/${learnerId}/details?status=success`
+								);
+							}
+						);
+					});
+				} else {
+					// If not approved, redirect to the details page
+					return res.redirect(`/learner/${learnerId}/details?status=success`);
+				}
 			}
 		);
 	});
@@ -278,31 +298,36 @@ app.get("/learner/:id/details", (req, res) => {
                 dropoffpoint.DropoffTime,
                 dropoffpoint.DropOffNumber
             FROM busregistration
-            JOIN bus ON bus.RouteID = busregistration.RouteID
-            JOIN pickuppoint ON pickuppoint.PickupID = busregistration.PickupID
-            JOIN dropoffpoint ON dropoffpoint.DropoffID = busregistration.DropoffID
+            LEFT JOIN bus ON bus.RouteID = busregistration.RouteID
+            LEFT JOIN pickuppoint ON pickuppoint.PickupID = busregistration.PickupID
+            LEFT JOIN dropoffpoint ON dropoffpoint.DropoffID = busregistration.DropoffID
             WHERE busregistration.LearnerID = ?`;
 
 		connection.query(detailsQuery, [learnerId], (err, detailsResults) => {
-			if (err || detailsResults.length === 0) {
+			if (err) {
 				console.error("Error fetching learner details:", err);
-				return res.status(404).send("Details not found.");
+				return res.status(500).send("Internal server error.");
 			}
 
-			const {
-				BusNumber,
-				PickupTime,
-				PickUpNumber,
-				DropoffTime,
-				DropOffNumber,
-			} = detailsResults[0];
+			// Check if bus registration details are found
+			const details = detailsResults.length > 0 ? detailsResults[0] : null;
 
 			// Render the EJS template with the fetched data
 			res.render("learnerDashboard", {
 				learner,
-				pickup: { PickupTime, PickUpNumber },
-				dropoff: { DropoffTime, DropOffNumber },
-				bus: { BusNumber },
+				pickup: details
+					? {
+							PickupTime: details.PickupTime,
+							PickUpNumber: details.PickUpNumber,
+					  }
+					: null,
+				dropoff: details
+					? {
+							DropoffTime: details.DropoffTime,
+							DropOffNumber: details.DropOffNumber,
+					  }
+					: null,
+				bus: details ? { BusNumber: details.BusNumber } : null,
 			});
 		});
 	});
@@ -426,12 +451,12 @@ app.get("/admin/dashboard", (req, res) => {
 							// Render dashboard with all data
 							res.render("dashboard", {
 								learners: learners,
-								labels: JSON.stringify(allLabels),
-								monthlyData: JSON.stringify(mergedMonthlyData),
-								weeklyData: JSON.stringify(mergedWeeklyData),
-								dailyData: JSON.stringify(mergedDailyData),
-								acceptedCount: JSON.stringify(acceptedCount),
-								waitingListCount: JSON.stringify(waitingListCount),
+								labels: JSON.stringify(allLabels) || "[]",
+								monthlyData: JSON.stringify(mergedMonthlyData) || "[]",
+								weeklyData: JSON.stringify(mergedWeeklyData) || "[]",
+								dailyData: JSON.stringify(mergedDailyData) || "[]",
+								acceptedCount: JSON.stringify(acceptedCount) || "[]",
+								waitingListCount: JSON.stringify(waitingListCount) || "[]",
 							});
 						});
 					});
@@ -486,23 +511,41 @@ app.post("/admin/action", (req, res) => {
 	const action = req.body.action;
 
 	let query, status;
+
 	if (action === "accept") {
 		status = "Approved";
 	} else if (action === "waitlist") {
 		status = "Waiting List";
 	} else if (action === "delete") {
-		query = "DELETE FROM learner WHERE LearnerID = ?";
-		connection.query(query, [learnerID], (err, result) => {
-			if (err) throw err;
-			res.redirect("/admin/dashboard");
+		// Delete bus registrations related to the learner
+		query = "DELETE FROM busregistration WHERE LearnerID = ?";
+		connection.query(query, [learnerID], (err) => {
+			if (err) {
+				console.error("Error deleting bus registrations:", err);
+				return res.status(500).send("Error deleting bus registrations.");
+			}
+
+			// Delete the learner after successful bus registration deletion
+			query = "DELETE FROM learner WHERE LearnerID = ?";
+			connection.query(query, [learnerID], (err, result) => {
+				if (err) {
+					console.error("Error deleting learner:", err);
+					return res.status(500).send("Error deleting learner.");
+				}
+				res.redirect("/admin/dashboard");
+			});
 		});
-		return; // Exit the function after handling deletion
+		return;
 	}
 
+	// If status needs to be updated (Approve or Waitlist)
 	if (status) {
 		query = "UPDATE learner SET Status = ? WHERE LearnerID = ?";
 		connection.query(query, [status, learnerID], (err, result) => {
-			if (err) throw err;
+			if (err) {
+				console.error("Error updating learner status:", err);
+				return res.status(500).send("Error updating learner status.");
+			}
 			res.redirect("/admin/dashboard");
 		});
 	}
@@ -652,13 +695,13 @@ app.post("/generate-reports/daily", (req, res) => {
 
 app.post("/generate-reports/weekly", (req, res) => {
 	generateWeeklyReport((results) =>
-		res.render("weeklyReport", { busUsage: results })
+		res.render("weeklyReport", { busUsage: JSON.stringify(results) })
 	);
 });
 
 app.post("/generate-reports/monthly", (req, res) => {
 	generateMonthlyReport((results) =>
-		res.render("monthlyReport", { busUsage: results })
+		res.render("monthlyReport", { busUsage: JSON.stringify(results) })
 	);
 });
 
@@ -737,8 +780,10 @@ app.post("/learner/delete/:id", (req, res) => {
 			// Redirect based on the redirect parameter
 			if (redirectTarget === "all") {
 				res.redirect("/AllLearnersDashboard");
-			} else {
+			} else if (redirectTarget === "details") {
 				res.redirect("/learnerDashboard");
+			} else {
+				res.redirect("/dashboard");
 			}
 		});
 	});

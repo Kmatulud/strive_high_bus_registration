@@ -253,7 +253,7 @@ footer {
 		overflow-x: auto;
 	}
 
-	/* Style table rows and cells to stack on mobile */
+	/* Style table rows and cells to stack on mobile
 	table,
 	thead,
 	tbody,
@@ -266,7 +266,7 @@ footer {
 
 	th {
 		display: none; /* Hide table headers on small screens */
-	}
+	/*}
 
 	td {
 		display: block;
@@ -279,11 +279,11 @@ footer {
 
 	td:before {
 		/* Create a pseudo-element to show the column name */
-		content: attr(data-label);
+		/* content: attr(data-label);
 		position: absolute;
 		left: 10px;
 		font-weight: bold;
-	}
+	} */ 
 
 	/* Make buttons smaller and stack them */
 	form button {
