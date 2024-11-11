@@ -107,8 +107,8 @@ const sendApprovedEmail = (parentEmail, learnerName) => {
 		host: "smtp-relay.sendinblue.com",
 		port: 587,
 		auth: {
-			user: "7f9f58001@smtp-brevo.com",
-			pass: "VMyPbUYzRONrXhLA",
+			user: process.env.SENDINBLUE_USER,
+			pass: process.env.SENDINBLUE_PASSWORD,
 		},
 	});
 
@@ -135,8 +135,8 @@ const sendWaitingListEmail = (parentEmail, learnerName) => {
 		host: "smtp-relay.sendinblue.com",
 		port: 587,
 		auth: {
-			user: "7f9f58001@smtp-brevo.com",
-			pass: "VMyPbUYzRONrXhLA",
+			user: process.env.SENDINBLUE_USER,
+			pass: process.env.SENDINBLUE_PASSWORD,
 		},
 	});
 
