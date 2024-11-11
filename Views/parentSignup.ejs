@@ -1,91 +1,204 @@
 <!DOCTYPE html>
 <html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link rel="stylesheet" href="/Css/style.css" />
+		<title>Parent Signup</title>
+		<style>
+			.error {
+				color: red;
+				font-size: 0.875em;
+			}
 
-<head>
-	<meta charset="UTF-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<link rel="stylesheet" href="/Css/style.css" />
-	<title>Parent Signup</title>
-</head>
+			.invalid {
+				border-color: red;
+			}
 
-<body>
-	<header>
-		<div class="image-container">
-			<img src="/images/strive-high-logo.svg" alt="strive-high-logo" />
+			.valid {
+				border-color: green;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header>
+			<div class="image-container">
+				<img src="/images/strive-high-logo.svg" alt="strive-high-logo" />
+			</div>
+			<button>View Website</button>
+		</header>
+		<div class="main">
+			<h1>Register New Account - Parent</h1>
+			<form
+				action=""
+				method="POST"
+				onsubmit="return validateRegistrationForm()"
+			>
+				<!-- Name and Surname -->
+				<input
+					type="text"
+					name="name_surname"
+					placeholder="Name and Surname"
+					pattern="[A-Za-z\s]+"
+					title="Only letters and spaces are allowed"
+					required
+					oninput="validateForm()"
+				/>
+				<div id="name_error" class="error" style="display: none">
+					Name and surname must be at least 3 characters long.
+				</div>
+
+				<!-- Cell Phone Number -->
+				<input
+					type="number"
+					name="cellPhoneNumber"
+					placeholder="Cell Phone Number"
+					pattern="^\d{10}$"
+					title="Enter a valid 10-digit phone number"
+					required
+					oninput="validateForm()"
+				/>
+				<div id="phone_error" class="error" style="display: none">
+					Please enter a valid 10-digit phone number.
+				</div>
+
+				<!-- Email -->
+				<input
+					type="email"
+					name="email"
+					placeholder="Email"
+					required
+					oninput="validateForm()"
+				/>
+				<div id="email_error" class="error" style="display: none">
+					Please enter a valid email address.
+				</div>
+
+				<!-- Password -->
+				<input
+					type="password"
+					name="password"
+					placeholder="Password"
+					minlength="8"
+					title="Password must be at least 8 characters long"
+					required
+					oninput="validateForm()"
+				/>
+				<div id="password_error" class="error" style="display: none">
+					Password must be at least 8 characters long.
+				</div>
+
+				<!-- Sign Up Button -->
+				<button type="submit" id="signupButton" disabled>Sign Up</button>
+			</form>
+			<p>Already have an Account?<a href="/parent/login">Login</a></p>
+			<a href="/">Home</a>
 		</div>
-		<button>View Website</button>
-	</header>
-	<div class="main">
-		<h1>Register New Account - Parent</h1>
-		<form action="" method="POST" onsubmit="return validateRegistrationForm()">
-			<!-- Name and Surname -->
-			<input type="text" name="name_surname" placeholder="Name and Surname" pattern="[A-Za-z\s]+"
-				title="Only letters and spaces are allowed" required />
 
-			<!-- Cell Phone Number -->
-			<input type="number" name="cellPhoneNumber" placeholder="Cell Phone Number" pattern="^\d{10}$"
-				title="Enter a valid 10-digit phone number" required />
+		<script>
+			function validateForm() {
+				const nameField = document.querySelector('input[name="name_surname"]');
+				const phoneField = document.querySelector(
+					'input[name="cellPhoneNumber"]'
+				);
+				const emailField = document.querySelector('input[name="email"]');
+				const passwordField = document.querySelector('input[name="password"]');
+				const signupButton = document.getElementById("signupButton");
 
-			<!-- Email -->
-			<input type="email" name="email" placeholder="Email" required />
+				const nameError = document.getElementById("name_error");
+				const phoneError = document.getElementById("phone_error");
+				const emailError = document.getElementById("email_error");
+				const passwordError = document.getElementById("password_error");
 
-			<!-- Password -->
-			<input type="password" name="password" placeholder="Password" minlength="8"
-				title="Password must be at least 8 characters long" required />
+				// Validate name (at least 3 characters long)
+				const isNameValid = nameField.value.trim().length >= 3;
+				if (!isNameValid) {
+					nameField.classList.add("invalid");
+					nameField.classList.remove("valid");
+					nameError.style.display = "block";
+				} else {
+					nameField.classList.add("valid");
+					nameField.classList.remove("invalid");
+					nameError.style.display = "none";
+				}
 
-			<button type="submit">Sign Up</button>
-		</form>
-		<p>Already have an Account?<a href="/parent/login">Login</a></p>
-		<a href="/">Home</a>
-	</div>
+				// Validate phone number (exactly 10 digits)
+				const isPhoneValid = /^\d{10}$/.test(phoneField.value);
+				if (!isPhoneValid) {
+					phoneField.classList.add("invalid");
+					phoneField.classList.remove("valid");
+					phoneError.style.display = "block";
+				} else {
+					phoneField.classList.add("valid");
+					phoneField.classList.remove("invalid");
+					phoneError.style.display = "none";
+				}
 
-	<script>
-		function validateRegistrationForm() {
-			const nameField = document.querySelector('input[name="name_surname"]');
-			const phoneField = document.querySelector('input[name="cellPhoneNumber"]');
-			const emailField = document.querySelector('input[name="email"]');
-			const passwordField = document.querySelector('input[name="password"]');
+				// Validate email (simple regex check)
+				const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(
+					emailField.value
+				);
+				if (!isEmailValid) {
+					emailField.classList.add("invalid");
+					emailField.classList.remove("valid");
+					emailError.style.display = "block";
+				} else {
+					emailField.classList.add("valid");
+					emailField.classList.remove("invalid");
+					emailError.style.display = "none";
+				}
 
-			// Check if the name is at least 3 characters long
-			if (nameField.value.trim().length < 3) {
-				alert("Name and surname must be at least 3 characters long.");
-				nameField.focus();
-				return false;
+				// Validate password (at least 8 characters)
+				const isPasswordValid = passwordField.value.length >= 8;
+				if (!isPasswordValid) {
+					passwordField.classList.add("invalid");
+					passwordField.classList.remove("valid");
+					passwordError.style.display = "block";
+				} else {
+					passwordField.classList.add("valid");
+					passwordField.classList.remove("invalid");
+					passwordError.style.display = "none";
+				}
+
+				// Enable Sign Up button only when all fields are valid
+				if (isNameValid && isPhoneValid && isEmailValid && isPasswordValid) {
+					signupButton.disabled = false;
+				} else {
+					signupButton.disabled = true;
+				}
 			}
 
-			// Check if the phone number is exactly 10 digits
-			if (!/^\d{10}$/.test(phoneField.value)) {
-				alert("Please enter a valid 10-digit cell phone number.");
-				phoneField.focus();
-				return false;
+			// Form validation before submission
+			function validateRegistrationForm() {
+				const nameField = document.querySelector('input[name="name_surname"]');
+				const phoneField = document.querySelector(
+					'input[name="cellPhoneNumber"]'
+				);
+				const emailField = document.querySelector('input[name="email"]');
+				const passwordField = document.querySelector('input[name="password"]');
+
+				const isNameValid = nameField.value.trim().length >= 3;
+				const isPhoneValid = /^\d{10}$/.test(phoneField.value);
+				const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(
+					emailField.value
+				);
+				const isPasswordValid = passwordField.value.length >= 8;
+
+				// If all validations pass, allow form submission
+				if (isNameValid && isPhoneValid && isEmailValid && isPasswordValid) {
+					return true;
+				} else {
+					alert("Please fill in all fields correctly.");
+					return false;
+				}
 			}
+		</script>
 
-			// Check if the email is valid using a simple regex pattern
-			const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-			if (!emailPattern.test(emailField.value)) {
-				alert("Please enter a valid email address.");
-				emailField.focus();
-				return false;
-			}
-
-			// Check if the password is at least 8 characters long
-			if (passwordField.value.length < 8) {
-				alert("Password must be at least 8 characters long.");
-				passwordField.focus();
-				return false;
-			}
-
-			// If all validations pass, allow form submission
-			return true;
-		}
-	</script>
-
-	<footer>
-		<p>
-			Developed with ❤ by Kgotso Matuludi Copyright &copy; 2024 Strive High
-		</p>
-	</footer>
-
-</body>
-
+		<footer>
+			<p>
+				Developed with ❤ by Kgotso Matuludi Copyright &copy; 2024 Strive High
+			</p>
+		</footer>
+	</body>
 </html>

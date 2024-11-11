@@ -17,6 +17,13 @@
 	</header>
 	<div class="main">
 		<h1>Parent Login</h1>
+		<!-- Display error message if it exists -->
+        <% if (typeof errorMessage !== 'undefined') { %>
+            <div style="color: rgb(240, 98, 98); font-size:20px;">
+                <%= errorMessage %>
+            </div>
+        <% } %>
+
 		<form action="" method="post">
 			<input type="email" name="email" placeholder="Email" required />
 			<input type="password" name="password" placeholder="Password" required />

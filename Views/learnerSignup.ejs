@@ -23,12 +23,16 @@
 			<div id="form-step-1">
 				<!-- Name and Surname -->
 				<input type="text" name="name_surname" placeholder="Learner's name and surname" pattern="[A-Za-z\s]+"
-					title="Only letters and spaces are allowed" required />
+					title="Only letters and spaces are allowed" required oninput="validateForm()" />
+				<span id="name-error" style="color:red; display:none;">Name must be at least 3 characters long.</span>
+
 				<!-- Cell Phone Number -->
 				<input type="text" name="cellPhoneNumber" placeholder="Cell Phone Number" pattern="^\d{10}$"
-					title="Enter a valid 10-digit phone number" required />
+					title="Enter a valid 10-digit phone number" required oninput="validateForm()" />
+				<span id="phone-error" style="color:red; display:none;">Please enter a valid 10-digit cell phone
+					number.</span>
 
-				<select id="grade" name="grade" required>
+				<select id="grade" name="grade" required oninput="validateForm()">
 					<option value="" disabled selected>Grade</option>
 					<option value="8">Grade 8</option>
 					<option value="9">Grade 9</option>
@@ -36,76 +40,55 @@
 					<option value="11">Grade 11</option>
 					<option value="12">Grade 12</option>
 				</select>
+				<span id="grade-error" style="color:red; display:none;">Please select a grade.</span>
+
 				<label for="registration_date">Date of Registration:</label>
-				<input type="date" id="registration_date" name="registration_date" required />
+				<input type="date" id="registration_date" name="registration_date" required oninput="validateForm()" />
+
 				<br />
-				<button type="button" onclick="showStep2()">Next</button>
+				<button type="button" id="nextButton" onclick="showStep2()" disabled>Next</button>
 			</div>
 
 			<!-- Second Part (Bus Info) -->
 			<div id="form-step-2" style="display: none;">
 				<label for="busRoute">Choose a bus route:</label>
-				<!-- <div id="radios"> -->
+				<div id="radios">
 					<label>Rooihuiskraal - 1</label>
-					<input type="radio" name="busRoute" value="1" required />
+					<input type="radio" name="busRoute" value="1" required oninput="validateForm()" />
 					<label>Wierdapark - 2</label>
-					<input type="radio" name="busRoute" value="2" required /> 
-					<label> Centurion - 3</label>
-					<input type="radio" name="busRoute" value="3" required />
-				<!-- </div> -->
-
+					<input type="radio" name="busRoute" value="2" required oninput="validateForm()" />
+					<label>Centurion - 3</label>
+					<input type="radio" name="busRoute" value="3" required oninput="validateForm()" />
+				</div>
 				<!-- Morning Pickup Info -->
 				<label for="morningLocation">Morning Pickup Point:</label>
-				<select id="morningLocation" name="morningLocation" required>
-					<option value="" disabled selected>
-						Select Morning Pickup Point
-					</option>
+				<select id="morningLocation" name="morningLocation" required oninput="validateForm()">
+					<option value="" disabled selected>Select Morning Pickup Point</option>
 					<option value="1">Corner of Panorama and Marabou Road</option>
-					<option value="2">
-						Corner of Kolgansstraat and Skimmerstraat
-					</option>
-					<option value="3">
-						Corner of Reddersburg Street and Mafeking Drive
-					</option>
-					<option value="4">
-						Corner of Theuns van Niekerkstraat and Roosmarynstraat
-					</option>
-					<option value="5">
-						Corner of Jasper Drive and Tieroog Street
-					</option>
-					<option value="6">
-						Corner of Louise Street and Von Willich Drive
-					</option>
+					<option value="2">Corner of Kolgansstraat and Skimmerstraat</option>
+					<option value="3">Corner of Reddersburg Street and Mafeking Drive</option>
+					<option value="4">Corner of Theuns van Niekerkstraat and Roosmarynstraat</option>
+					<option value="5">Corner of Jasper Drive and Tieroog Street</option>
+					<option value="6">Corner of Louise Street and Von Willich Drive</option>
 				</select>
 
 				<!-- Afternoon Dropoff Info -->
 				<label for="afternoonLocation">Afternoon Dropoff Point:</label>
-				<select id="afternoonLocation" name="afternoonLocation" required>
-					<option value="" disabled selected>
-						Select Afternoon Dropoff Point
-					</option>
+				<select id="afternoonLocation" name="afternoonLocation" required oninput="validateForm()">
+					<option value="" disabled selected>Select Afternoon Dropoff Point</option>
 					<option value="1">Corner of Panorama and Marabou Road</option>
-					<option value="2">
-						Corner of Kolgansstraat and Skimmerstraat
-					</option>
-					<option value="3">
-						Corner of Reddersburg Street and Mafeking Drive
-					</option>
-					<option value="4">
-						Corner of Theuns van Niekerkstraat and Roosmarynstraat
-					</option>
-					<option value="5">
-						Corner of Jasper Drive and Tieroog Street
-					</option>
-					<option value="6">
-						Corner of Louise Street and Von Willich Drive
-					</option>
+					<option value="2">Corner of Kolgansstraat and Skimmerstraat</option>
+					<option value="3">Corner of Reddersburg Street and Mafeking Drive</option>
+					<option value="4">Corner of Theuns van Niekerkstraat and Roosmarynstraat</option>
+					<option value="5">Corner of Jasper Drive and Tieroog Street</option>
+					<option value="6">Corner of Louise Street and Von Willich Drive</option>
 				</select>
 
 				<button type="submit">Register Learner</button>
 				<a href="/parent/login">Back</a>
 			</div>
 		</form>
+
 		<script>
 			function showStep2() {
 				document.getElementById("form-step-1").style.display = "none";
@@ -121,44 +104,47 @@
 				} else if (status === 'error') {
 					alert("Error: Learner registration failed.");
 				}
+
+				// Disable the Next button initially
+				document.getElementById("nextButton").disabled = true;
 			};
 
 			function validateForm() {
 				const nameField = document.querySelector('input[name="name_surname"]');
 				const phoneField = document.querySelector('input[name="cellPhoneNumber"]');
 				const gradeField = document.querySelector('select[name="grade"]');
+				const registrationDateField = document.querySelector('input[name="registration_date"]');
+				const nextButton = document.getElementById("nextButton");
 
 				// Check if the name is at least 3 characters long
-				if (nameField.value.trim().length < 3) {
-					alert("Learner's name and surname must be at least 3 characters long.");
-					nameField.focus();
-					return false;
-				}
+				const isNameValid = nameField.value.trim().length >= 3;
+				const nameError = document.getElementById('name-error');
+				nameError.style.display = isNameValid ? 'none' : 'inline';
 
 				// Check if the phone number is exactly 10 digits
-				if (!/^\d{10}$/.test(phoneField.value)) {
-					alert("Please enter a valid 10-digit cell phone number.");
-					phoneField.focus();
-					return false;
-				}
+				const isPhoneValid = /^\d{10}$/.test(phoneField.value);
+				const phoneError = document.getElementById('phone-error');
+				phoneError.style.display = isPhoneValid ? 'none' : 'inline';
 
 				// Check if a grade is selected
-				if (gradeField.value === "") {
-					alert("Please select a grade.");
-					gradeField.focus();
-					return false;
+				const isGradeSelected = gradeField.value !== "";
+				const gradeError = document.getElementById('grade-error');
+				gradeError.style.display = isGradeSelected ? 'none' : 'inline';
+
+				// Check if the registration date is selected
+				const isRegistrationDateSelected = registrationDateField.value !== "";
+
+				// Enable Next button only when all fields are valid
+				if (isNameValid && isPhoneValid && isGradeSelected && isRegistrationDateSelected) {
+					nextButton.disabled = false;
+				} else {
+					nextButton.disabled = true;
 				}
-
-				// If all validations pass, allow form submission
-				return true;
 			}
-
 		</script>
 
 		<footer>
-			<p>
-				Developed with ❤ by Kgotso Matuludi Copyright &copy; 2024 Strive High
-			</p>
+			<p>Developed with ❤ by Kgotso Matuludi Copyright &copy; 2024 Strive High</p>
 		</footer>
 </body>
 

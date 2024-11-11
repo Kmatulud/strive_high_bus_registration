@@ -79,6 +79,7 @@ app.get("/parent/login", (req, res) => {
 app.post("/parent/login", (req, res) => {
 	const { email, password } = req.body;
 	const query = "SELECT * FROM parent WHERE Email = ? AND Password = ?";
+
 	connection.query(query, [email, password], (err, results) => {
 		if (err) {
 			console.error("Error during parent login:", err);
@@ -88,17 +89,12 @@ app.post("/parent/login", (req, res) => {
 			req.session.parent = results[0];
 			res.redirect("/learner/signup");
 		} else {
-			res.send("Incorrect email or password");
+			// Pass errorMessage to EJS template if credentials are incorrect
+			res.render("parentLogin", {
+				errorMessage: "Incorrect email or password.",
+			});
 		}
 	});
-});
-
-app.get("/parent/dashboard", (req, res) => {
-	if (req.session.parent) {
-		res.render("parent_dashboard", { parent: req.session.parent });
-	} else {
-		res.redirect("/parent/login");
-	}
 });
 
 // Function to send acknowledgment email for approved applications
@@ -161,7 +157,6 @@ app.get("/learner/signup", (req, res) => {
 	res.render("learnerSignup");
 });
 
-// Learner actions
 // Learner actions
 app.post("/learner/signup", (req, res) => {
 	if (!req.session || !req.session.parent) return res.redirect("/parent/login");
@@ -500,7 +495,10 @@ app.post("/admin/login", (req, res) => {
 			req.session.admin = results[0];
 			res.redirect("/admin/dashboard");
 		} else {
-			res.send("Incorrect email or password");
+			// Pass errorMessage to EJS template if credentials are incorrect
+			res.render("adminLogin", {
+				errorMessage: "Login credentials are incorrect",
+			});
 		}
 	});
 });

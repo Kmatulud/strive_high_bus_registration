@@ -17,6 +17,12 @@
 	</header>
 	<div class="main">
 		<h1>Admin Login</h1>
+		<!-- Display error message if it exists -->
+        <% if (typeof errorMessage !== 'undefined') { %>
+            <div style="color: rgb(240, 98, 98); font-size:20px;">
+                <%= errorMessage %>
+            </div>
+        <% } %>
 		<form action="" method="post">
 			<input type="text" name="initials_surname" placeholder="Initials and Surname" required />
 			<input type="email" name="email" placeholder="Email" required />
