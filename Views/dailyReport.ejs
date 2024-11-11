@@ -40,7 +40,6 @@
 				<button type="submit">Search</button>
 			</form>
 		</div>
-		<!-- <h2>Waiting List</h2>
 
 		<!-- Format the date -->
 		<% const formatDate = (date) => { const options = { year: 'numeric', month:
@@ -139,86 +138,6 @@
 				<% }); %>
 			</tbody>
 		</table>
-		<!-- End of table -->
-		<!-- Charts
-		<div class="chartContainer">
-			<canvas id="waitingListChart"></canvas>
-			<canvas id="dailyUsageChart"></canvas>
-		</div>
-
-		<script>
-			// Data for Waiting List Chart
-			const ctxPie = document
-				.getElementById("waitingListChart")
-				.getContext("2d");
-			const pieChart = new Chart(ctxPie, {
-				type: "pie",
-				data: {
-					labels: ["Waiting List"], // Add more labels if needed
-					datasets: [
-						{
-							data: "[<%= waitingList %>]",
-							backgroundColor: ["purple", "green"], // Adjust colors as needed
-						},
-					],
-				},
-				options: {
-					plugins: {
-						title: {
-							display: true,
-							text: "Learners on Waiting List",
-							color: "white",
-						},
-						legend: {
-							labels: {
-								color: "#ffffff",
-							},
-						},
-					},
-				},
-			});
-
-			// Data for Bus Usage Chart
-			const ctxBar = document
-				.getElementById("dailyUsageChart")
-				.getContext("2d");
-			const barChart = new Chart(ctxBar, {
-				type: "bar",
-				data: {
-					labels: "busNumbers",
-					datasets: [
-						{
-							label: "Morning",
-							data: "[<%= busUsage %>]",
-							backgroundColor: "blue",
-						},
-					],
-				},
-				options: {
-					responsive: true,
-					scales: {
-						x: {
-							stacked: true,
-						},
-						y: {
-							beginAtZero: true,
-						},
-					},
-					plugins: {
-						title: {
-							display: true,
-							text: "Bus Usage: Morning vs Afternoon",
-							color: "white",
-						},
-						legend: {
-							labels: {
-								color: "#ffffff",
-							},
-						},
-					},
-				},
-			});
-		</script> -->
 
 		<a href="/">Logout</a>
 		<footer>

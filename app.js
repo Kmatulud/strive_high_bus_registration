@@ -6,7 +6,8 @@ const mysql = require("mysql2");
 const dotenv = require("dotenv");
 const morgan = require("morgan");
 const { log } = require("console");
-const moment = require("moment"); 
+const moment = require("moment");
+const nodemailer = require("nodemailer");
 
 dotenv.config();
 
@@ -100,44 +101,236 @@ app.get("/parent/dashboard", (req, res) => {
 	}
 });
 
-// Learner actions
+// Function to send acknowledgment email for approved applications
+const sendApprovedEmail = (parentEmail, learnerName) => {
+  const transporter = nodemailer.createTransport({
+		host: "smtp-relay.sendinblue.com",
+		port: 587,
+		auth: {
+			user: process.env.SENDINBLUE_USER,
+			pass: process.env.SENDINBLUE_PASSWORD,
+		},
+	});
+
+  const mailOptions = {
+		from: '"Strive High Secondary School" strive@high.com',
+		to: parentEmail,
+		subject: "Learner Application Approved",
+		text: `Dear Parent, \n\nCongratulations! The application for ${learnerName} has been approved. Please proceed with the next steps on our platform.\n\nBest regards,\nSchool Name`,
+		html: `<p>Dear Parent,</p><p>Congratulations! The application for <strong>${learnerName}</strong> has been approved. Please proceed with the next steps on our platform.</p><p>Best regards,<br>Strive High Secondary School</p>`,
+	};
+
+  transporter.sendMail(mailOptions, (err, info) => {
+    if (err) {
+      console.error("Error sending approved email:", err);
+    } else {
+      console.log("Approval email sent:", info.response);
+    }
+  });
+};
+
+// Function to send email if the learner is on the waiting list
+const sendWaitingListEmail = (parentEmail, learnerName) => {
+  const transporter = nodemailer.createTransport({
+		host: "smtp-relay.sendinblue.com",
+		port: 587,
+		auth: {
+			user: process.env.SENDINBLUE_USER,
+			pass: process.env.SENDINBLUE_PASSWORD,
+		},
+	});
+
+  const mailOptions = {
+		from: '"Strive High Secondary School" strive@high.com',
+		to: parentEmail,
+		subject: "Learner Application on Waiting List",
+		text: `Dear Parent, \n\nWe have received the application for ${learnerName}. Currently, it is placed on the waiting list. We will notify you once the status changes.\n\nBest regards,\nSchool Name`,
+		html: `<p>Dear Parent,</p><p>We have received the application for <strong>${learnerName}</strong>. Currently, it is placed on the waiting list. We will notify you once the status changes.</p><p>Best regards,<br>Strive High Secondary School</p>`,
+	};
+
+  transporter.sendMail(mailOptions, (err, info) => {
+    if (err) {
+      console.error("Error sending waiting list email:", err);
+    } else {
+      console.log("Waiting list email sent:", info.response);
+    }
+  });
+};
+
 app.get("/learner/signup", (req, res) => {
 	res.render("learnerSignup");
 });
 
+// Learner actions
 app.post("/learner/signup", (req, res) => {
-	if (!req.session.parent) {
-		return res.redirect("/parent/login");
-	}
+	if (!req.session || !req.session.parent) return res.redirect("/parent/login");
+	if (!req.session || !req.session.admin) return res.redirect("/admin/login");
+	const {
+		name_surname,
+		cellPhoneNumber,
+		grade,
+		busRoute,
+		morningLocation,
+		afternoonLocation,
+		registration_date,
+	} = req.body;
 
-	const { name_surname, cellPhoneNumber, grade, registration_date } = req.body;
 	const parentId = req.session.parent.ParentID;
+	const parentEmail = req.session.parent.Email;
 
-	// Ensure all required fields are present
+	// Check if all required fields are filled
 	if (
 		!name_surname ||
 		!cellPhoneNumber ||
 		!registration_date ||
 		!grade ||
+		!busRoute ||
+		!morningLocation ||
+		!afternoonLocation ||
 		!parentId
 	) {
-		return res.status(400).send("All fields are required.");
+		return res.redirect("/learner/signup?status=error");
 	}
 
-	const query =
-		"INSERT INTO learner (Name_Surname, CellPhoneNumber, Grade, RegistrationDate, ParentID) VALUES (?, ?, ?, ?, ?)";
-
-	connection.query(
-		query,
-		[name_surname, cellPhoneNumber, grade, registration_date, parentId],
-		(err, results) => {
-			if (err) {
-				console.error("Error inserting learner:", err);
-				return res.send("Error inserting learner.");
-			}
-			res.send("Learner registered successfully!");
+	// Step 1: Check bus capacity
+	const checkBusCapacityQuery = "SELECT BusCapacity FROM bus WHERE RouteID = ?";
+	connection.query(checkBusCapacityQuery, [busRoute], (err, busResults) => {
+		if (err || busResults.length === 0) {
+			console.error("Error checking bus capacity:", err);
+			return res.redirect("/learner/signup?status=error");
 		}
-	);
+
+		const busCapacity = busResults[0].BusCapacity;
+		const learnerStatus = busCapacity > 0 ? "Approved" : "Waiting List";
+
+		// Step 2: Insert learner into the database
+		const insertLearnerQuery = `
+            INSERT INTO learner (Name_Surname, CellPhoneNumber, Grade, RegistrationDate, ParentID, Status) 
+            VALUES (?, ?, ?, ?, ?, ?)
+        `;
+		connection.query(
+			insertLearnerQuery,
+			[
+				name_surname,
+				cellPhoneNumber,
+				grade,
+				registration_date,
+				parentId,
+				learnerStatus,
+			],
+			(err, results) => {
+				if (err) {
+					console.error("Error inserting learner:", err);
+					return res.redirect("/learner/signup?status=error");
+				}
+
+				const learnerId = results.insertId;
+
+				// Step 3: Send acknowledgment email
+				if (learnerStatus === "Approved") {
+					sendApprovedEmail(parentEmail, name_surname);
+				} else {
+					sendWaitingListEmail(parentEmail, name_surname);
+				}
+
+				// Step 4: Update bus capacity and register the bus if approved
+				if (learnerStatus === "Approved") {
+					const updateBusCapacityQuery = `
+                        UPDATE bus SET BusCapacity = BusCapacity - 1 
+                        WHERE RouteID = ? AND BusCapacity > 0
+                    `;
+					connection.query(updateBusCapacityQuery, [busRoute], (err) => {
+						if (err) {
+							console.error("Error updating bus capacity:", err);
+							return res.redirect("/learner/signup?status=error");
+						}
+					});
+				}
+
+				// Successful registration, redirect with success status
+				return res.redirect(`/learner/${learnerId}/details?status=success`);
+			}
+		);
+	});
+});
+
+// Learner details route
+app.get("/learner/:id/details", (req, res) => {
+	const learnerId = req.params.id;
+
+	// Query to get learner's status
+	const learnerQuery =
+		"SELECT Name_Surname, Grade, Status FROM learner WHERE LearnerID = ?";
+	connection.query(learnerQuery, [learnerId], (err, learnerResults) => {
+		if (err || learnerResults.length === 0) {
+			console.error("Error fetching learner status:", err);
+			return res.status(404).send("Learner not found.");
+		}
+
+		const learner = learnerResults[0];
+
+		// Query to get bus and pickup/dropoff details
+		const detailsQuery = `
+            SELECT 
+                bus.BusNumber,
+                pickuppoint.PickupTime,
+                pickuppoint.PickUpNumber,
+                dropoffpoint.DropoffTime,
+                dropoffpoint.DropOffNumber
+            FROM busregistration
+            JOIN bus ON bus.RouteID = busregistration.RouteID
+            JOIN pickuppoint ON pickuppoint.PickupID = busregistration.PickupID
+            JOIN dropoffpoint ON dropoffpoint.DropoffID = busregistration.DropoffID
+            WHERE busregistration.LearnerID = ?`;
+
+		connection.query(detailsQuery, [learnerId], (err, detailsResults) => {
+			if (err || detailsResults.length === 0) {
+				console.error("Error fetching learner details:", err);
+				return res.status(404).send("Details not found.");
+			}
+
+			const {
+				BusNumber,
+				PickupTime,
+				PickUpNumber,
+				DropoffTime,
+				DropOffNumber,
+			} = detailsResults[0];
+
+			// Render the EJS template with the fetched data
+			res.render("learnerDashboard", {
+				learner,
+				pickup: { PickupTime, PickUpNumber },
+				dropoff: { DropoffTime, DropOffNumber },
+				bus: { BusNumber },
+			});
+		});
+	});
+});
+
+app.get("/AlllearnersDashboard", (req, res) => {
+	if (!req.session || !req.session.parent) return res.redirect("/parent/login");
+
+	const parentId = req.session.parent.ParentID;
+	const query = `
+		SELECT learner.LearnerID, learner.Name_Surname, learner.Grade, learner.Status, 
+		       pickuppoint.PickupTime, pickuppoint.PickUpNumber, bus.BusNumber, 
+		       dropoffpoint.DropoffTime, dropoffpoint.DropOffNumber
+		FROM learner
+		LEFT JOIN busregistration ON learner.LearnerID = busregistration.LearnerID
+		LEFT JOIN bus ON busregistration.RouteID = bus.RouteID
+		LEFT JOIN pickuppoint ON busregistration.PickupID = pickuppoint.PickupID
+		LEFT JOIN dropoffpoint ON busregistration.DropoffID = dropoffpoint.DropoffID
+		WHERE learner.ParentID = ?`;
+
+	connection.query(query, [parentId], (err, results) => {
+		if (err) {
+			console.error("Error fetching learners:", err);
+			return res.send("Error fetching learners.");
+		}
+
+		res.render("AllLearnersDashboard", { learners: results });
+	});
 });
 
 app.get("/admin/dashboard", (req, res) => {
@@ -317,7 +510,7 @@ app.post("/admin/action", (req, res) => {
 
 // Format date using Moment.js
 function formatDate(date) {
-	return moment(date).format("DD MMM YYYY"); 
+	return moment(date).format("DD MMM YYYY");
 }
 
 // Define the generateDailyReport function
@@ -374,7 +567,7 @@ function generateDailyReport(callback) {
 	});
 }
 
- // Define the generateWeeklyReport function
+// Define the generateWeeklyReport function
 function generateWeeklyReport(callback) {
 	const query = `
         SELECT l.*, 
@@ -449,7 +642,7 @@ function generateMonthlyReport(callback) {
 	});
 }
 
- // MIS Report Routes
+// MIS Report Routes
 app.post("/generate-reports/daily", (req, res) => {
 	generateDailyReport((results) => {
 		const { waitingList, busUsage } = results;
@@ -510,6 +703,54 @@ app.post("/search-reports/monthly", (req, res) => {
 	connection.query(query, [searchPattern, searchPattern], (err, results) => {
 		if (err) throw err;
 		res.render("monthlyReport", { learners: results });
+	});
+});
+
+// Cancel application
+app.post("/learner/delete/:id", (req, res) => {
+	const learnerId = req.params.id;
+	console.log("Deleting learner with ID:", learnerId);
+
+	if (!learnerId) {
+		return res.status(400).send("Learner ID is missing.");
+	}
+
+	const redirectTarget = req.body.redirect || req.query.redirect;
+
+	// First, delete associated bus registrations
+	const deleteBusRegistrationQuery =
+		"DELETE FROM busregistration WHERE LearnerID = ?";
+	connection.query(deleteBusRegistrationQuery, [learnerId], (err) => {
+		if (err) {
+			console.error("Error deleting bus registrations:", err);
+			return res.status(500).send("Error deleting bus registrations.");
+		}
+
+		// SQL query to delete the learner
+		const deleteQuery = "DELETE FROM learner WHERE LearnerID = ?";
+		connection.query(deleteQuery, [learnerId], (err, result) => {
+			if (err) {
+				console.error("Error deleting learner:", err);
+				return res.status(500).send("Error deleting learner.");
+			}
+
+			// Redirect based on the redirect parameter
+			if (redirectTarget === "all") {
+				res.redirect("/AllLearnersDashboard");
+			} else {
+				res.redirect("/learnerDashboard");
+			}
+		});
+	});
+});
+
+app.get("/logout", (req, res) => {
+	req.session.destroy((err) => {
+		if (err) {
+			console.error("Error logging out:", err);
+			return res.send("Error logging out.");
+		}
+		res.redirect("/");
 	});
 });
 

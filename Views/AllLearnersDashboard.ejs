@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link rel="stylesheet" href="/Css/style.css" />
+		<title>Learner Registration Details</title>
+		<style>
+			table {
+				width: 100%;
+				border-collapse: collapse;
+			}
+
+			th,
+			td {
+				border: 1px solid #ddd;
+				padding: 8px;
+				text-align: center;
+			}
+
+			th {
+				background-color: #f2f2f2;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header>
+			<div class="image-container">
+				<img src="/images/strive-high-logo.svg" alt="strive-high-logo" />
+			</div>
+			<button>View Website</button>
+		</header>
+		<h1>Your Registered Learners</h1>
+		<a href="/logout"><button>Logout</button></a>
+		<table>
+			<thead>
+				<tr>
+					<th>Name</th>
+					<th>Grade</th>
+					<th>Pickup Time</th>
+					<th>Pickup Number</th>
+					<th>Bus Number</th>
+					<th>Dropoff Time</th>
+					<th>Dropoff Number</th>
+					<th>Status</th>
+					<th>Action</th>
+				</tr>
+			</thead>
+			<tbody>
+				<% learners.forEach(learner=> { %>
+				<tr>
+					<td><%= learner.Name_Surname %></td>
+					<td><%= learner.Grade %></td>
+					<td><%= learner.PickupTime %></td>
+					<td><%= learner.PickUpNumber %></td>
+					<td><%= learner.BusNumber %></td>
+					<td><%= learner.DropoffTime %></td>
+					<td><%= learner.DropOffNumber %></td>
+					<td><%= learner.Status || 'N/A' %></td>
+					<td>
+						<form
+							action="/learner/delete/<%= learner.LearnerID %>"
+							method="POST"
+							style="display: inline"
+							onsubmit="return confirm('Are you sure you want to remove this learner?');"
+						>
+							<input type="hidden" name="redirect" value="all" />
+							<button type="submit">Cancel Application</button>
+						</form>
+					</td>
+				</tr>
+				<% }) %>
+			</tbody>
+		</table>
+		<footer>
+			<p>
+				Developed with ❤ by Kgotso Matuludi Copyright &copy; 2024 Strive High
+			</p>
+		</footer>
+	</body>
+</html>

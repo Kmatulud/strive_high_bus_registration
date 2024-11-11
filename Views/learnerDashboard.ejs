@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<link rel="stylesheet" href="/Css/style.css" />
+	<title>Learner Registration Details</title>
+	<style>
+		table {
+			width: 100%;
+			border-collapse: collapse;
+		}
+
+		th,
+		td {
+			border: 1px solid #ddd;
+			padding: 8px;
+			text-align: center;
+		}
+
+		th {
+			background-color: #f2f2f2;
+		}
+	</style>
+</head>
+
+<body>
+	<header>
+		<div class="image-container">
+			<img src="/images/strive-high-logo.svg" alt="strive-high-logo" />
+		</div>
+		<button>View Website</button>
+	</header>
+	<h1>Learner Registration Details</h1>
+	<a href="/AllLearnersDashboard"><button>View all Your Registered learners</button></a>
+	<a href="/logout"><button>Logout</button></a>
+
+	<table>
+		<tr>
+			<th>Name</th>
+			<th>Grade</th>
+			<th>Pick Up Time</th>
+			<th>Pick Up Number</th>
+			<th>Bus Number</th>
+			<th>Drop Off Time</th>
+			<th>Drop Off Number</th>
+			<th>Status</th>
+			<th>Action</th>
+		</tr>
+
+		<tr>
+			<td>
+				<%= learner && learner.Name_Surname ? learner.Name_Surname : 'N/A' %>
+			</td>
+			<td>
+				<%= learner && learner.Grade ? learner.Grade : 'N/A' %>
+			</td>
+			<td>
+				<%= pickup && pickup.PickupTime ? pickup.PickupTime : 'N/A' %>
+			</td>
+			<td>
+				<%= pickup && pickup.PickUpNumber ? pickup.PickUpNumber : 'N/A' %>
+			</td>
+			<td>
+				<%= bus && bus.BusNumber ? bus.BusNumber : 'N/A' %>
+			</td>
+			<td>
+				<%= dropoff && dropoff.DropoffTime ? dropoff.DropoffTime : 'N/A' %>
+			</td>
+			<td>
+				<%= dropoff && dropoff.DropOffNumber ? dropoff.DropOffNumber : 'N/A' %>
+			</td>
+			<td>
+				<%= learner && learner.Status ? learner.Status : 'N/A' %>
+			</td>
+			<td>
+				<form action="/learner/delete/<%= learner.LearnerID %>" method="POST" style="display: inline"
+					onsubmit="return confirm('Are you sure you want to remove this learner?');">
+					<input type="hidden" name="redirect" value="details" />
+					<button type="submit">Cancel Application</button>
+				</form>
+
+				</form>
+			</td>
+		</tr>
+	</table>
+	<footer>
+		<p>
+			Developed with ❤ by Kgotso Matuludi Copyright &copy; 2024 Strive High
+		</p>
+	</footer>
+</body>
+
+</html>

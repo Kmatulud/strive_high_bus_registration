@@ -1,50 +1,91 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<link rel="stylesheet" href="/Css/style.css" />
-		<title>Parent Signup</title>
-	</head>
 
-	<body>
-		<header>
-			<div class="image-container">
-				<img src="/images/strive-high-logo.svg" alt="strive-high-logo" />
-			</div>
-			<button>View Website</button>
-		</header>
-		<div class="main">
-			<h1>Register New Account - Parent</h1>
-			<form action="" method="POST">
-				<input
-					type="text"
-					name="name_surname"
-					placeholder="Name and Surname"
-					required
-				/>
-				<input
-					type="number"
-					name="cellPhoneNumber"
-					placeholder="Cell Phone Number"
-					required
-				/>
-				<input type="email" name="email" placeholder="Email" required />
-				<input
-					type="password"
-					name="password"
-					placeholder="Password"
-					required
-				/>
-				<button type="submit">Sign Up</button>
-			</form>
-			<p>Already have an Account?<a href="/parent/login">Login</a></p>
-			<a href="/">Home</a>
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<link rel="stylesheet" href="/Css/style.css" />
+	<title>Parent Signup</title>
+</head>
+
+<body>
+	<header>
+		<div class="image-container">
+			<img src="/images/strive-high-logo.svg" alt="strive-high-logo" />
 		</div>
-		<footer>
-			<p>
-				Developed with ❤ by Kgotso Matuludi Copyright &copy; 2024 Strive High
-			</p>
-		</footer>
-	</body>
+		<button>View Website</button>
+	</header>
+	<div class="main">
+		<h1>Register New Account - Parent</h1>
+		<form action="" method="POST" onsubmit="return validateRegistrationForm()">
+			<!-- Name and Surname -->
+			<input type="text" name="name_surname" placeholder="Name and Surname" pattern="[A-Za-z\s]+"
+				title="Only letters and spaces are allowed" required />
+
+			<!-- Cell Phone Number -->
+			<input type="number" name="cellPhoneNumber" placeholder="Cell Phone Number" pattern="^\d{10}$"
+				title="Enter a valid 10-digit phone number" required />
+
+			<!-- Email -->
+			<input type="email" name="email" placeholder="Email" required />
+
+			<!-- Password -->
+			<input type="password" name="password" placeholder="Password" minlength="8"
+				title="Password must be at least 8 characters long" required />
+
+			<button type="submit">Sign Up</button>
+		</form>
+		<p>Already have an Account?<a href="/parent/login">Login</a></p>
+		<a href="/">Home</a>
+	</div>
+
+	<script>
+		function validateRegistrationForm() {
+			const nameField = document.querySelector('input[name="name_surname"]');
+			const phoneField = document.querySelector('input[name="cellPhoneNumber"]');
+			const emailField = document.querySelector('input[name="email"]');
+			const passwordField = document.querySelector('input[name="password"]');
+
+			// Check if the name is at least 3 characters long
+			if (nameField.value.trim().length < 3) {
+				alert("Name and surname must be at least 3 characters long.");
+				nameField.focus();
+				return false;
+			}
+
+			// Check if the phone number is exactly 10 digits
+			if (!/^\d{10}$/.test(phoneField.value)) {
+				alert("Please enter a valid 10-digit cell phone number.");
+				phoneField.focus();
+				return false;
+			}
+
+			// Check if the email is valid using a simple regex pattern
+			const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+			if (!emailPattern.test(emailField.value)) {
+				alert("Please enter a valid email address.");
+				emailField.focus();
+				return false;
+			}
+
+			// Check if the password is at least 8 characters long
+			if (passwordField.value.length < 8) {
+				alert("Password must be at least 8 characters long.");
+				passwordField.focus();
+				return false;
+			}
+
+			// If all validations pass, allow form submission
+			return true;
+		}
+	</script>
+
+	<footer>
+		<p>
+			Developed with ❤ by Kgotso Matuludi Copyright &copy; 2024 Strive High
+		</p>
+	</footer>
+
+</body>
+
 </html>

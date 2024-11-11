@@ -27,9 +27,10 @@ body {
 	min-height: 100vh;
 	width: 100%;
 	color: rgb(224, 205, 205);
+	padding-bottom: 7rem;
 }
 
-body .links{
+body .links {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
@@ -71,10 +72,10 @@ h1 {
 	color: #fff;
 }
 
-label{
+label {
 	color: #7c5050;
 	display: block;
-    margin-bottom: 5px;
+	margin-bottom: 5px;
 }
 
 .main {
@@ -85,20 +86,37 @@ label{
 }
 
 form {
-    background-color: #fff;
-    padding: 20px;
+	background-color: #fff;
+	padding: 20px;
 	display: flex;
 	flex-direction: column;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    width: 30%;
+	border-radius: 10px;
+	box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+	width: 30%;
+}
+form #form-step-1 {
+	display: flex;
+	flex-direction: column;
 }
 
-table{
-	margin: 0 16px;
+/* Table Styles */
+table {
+	width: 100%;
+	border-collapse: collapse;
+	margin-bottom: 20px;
 }
 
-.search form{
+th, td {
+	padding: 10px;
+	text-align: left;
+	border: 1px solid #ddd;
+}
+
+th {
+	background-color: #797575;
+}
+
+.search form {
 	display: flex;
 	align-items: center;
 	justify-content: flex-start;
@@ -108,13 +126,13 @@ table{
 	margin: 32px 16px;
 }
 
-.search form button{
+.search form button {
 	width: fit-content;
 }
 
 .search form input,
 .search form input:focus,
-.search form input:active{
+.search form input:active {
 	width: 100%;
 	border: none;
 	outline: none;
@@ -130,27 +148,28 @@ form button {
 	cursor: pointer;
 }
 
-input, select {
-    padding: 10px;
-    margin-bottom: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
+input,
+select {
+	padding: 10px;
+	margin-bottom: 10px;
+	border: 1px solid #ccc;
+	border-radius: 5px;
 }
 
-input[type="radio"]{
+input[type="radio"] {
 	margin: 10px;
 }
 
 /* a tags */
-a{
-    color: blue;
-    text-decoration: none;
-    font-weight: bold;
+a {
+	color: beige;
+	text-decoration: none;
+	font-weight: bold;
 	font-size: 1.3rem;
 }
 
 a:hover {
-    color: rgb(3, 78, 3);
+	color: rgb(3, 78, 3);
 }
 
 /* form */
@@ -163,5 +182,196 @@ footer {
 	color: black;
 	text-align: center;
 	padding: 10px 0;
+	position: fixed;
+	bottom: 0;
 	margin-top: auto;
+	width: 100%;
+}
+
+/* Responsiveness */
+@media (max-width: 768px) {
+	body {
+		padding-bottom: 5rem;
+	}
+
+	header {
+		padding: 2px 5px;
+		width: 100%;
+	}
+
+	header button {
+		width: 25%;
+		font-size: 1.3rem;
+	}
+
+	.image-container {
+		width: 13%;
+	}
+
+	/* Main form adjustments */
+	.main {
+		width: 100%;
+		padding: 20px;
+		margin-top: 4rem;
+	}
+
+	form {
+		width: 80%; /* Make form wider on medium-sized screens */
+	}
+
+	#form-step-2 select {
+		padding: 10px;
+		font-size: 25px;
+		width: 100%;
+	}
+	#form-step-2 #radios {
+		width: 25%;
+	}
+	#form-step-1 select {
+		font-size: 25px;
+	}
+
+	/* Make search form fill screen width */
+	.search form {
+		width: 100%;
+	}
+
+	input,
+	select {
+		padding: 7px;
+		font-size: 25px;
+	}
+
+	button {
+		padding: 1px;
+		font-size: 25px;
+	}
+
+	/* Make table scrollable horizontally */
+	.table-container {
+		width: 100%;
+		overflow-x: auto;
+	}
+
+	/* Style table rows and cells to stack on mobile */
+	table,
+	thead,
+	tbody,
+	th,
+	td,
+	tr {
+		display: block;
+		width: 100%;
+	}
+
+	th {
+		display: none; /* Hide table headers on small screens */
+	}
+
+	td {
+		display: block;
+		width: 100%;
+		text-align: right;
+		border-bottom: 1px solid #ddd;
+		position: relative;
+		padding-left: 50%;
+	}
+
+	td:before {
+		/* Create a pseudo-element to show the column name */
+		content: attr(data-label);
+		position: absolute;
+		left: 10px;
+		font-weight: bold;
+	}
+
+	/* Make buttons smaller and stack them */
+	form button {
+		width: 100%;
+		padding: 8px;
+		margin: 5px 0;
+	}
+
+	/* Adjust the width of the input fields and buttons */
+	input,
+	button {
+		width: 100%;
+	}
+}
+
+@media (max-width: 480px) {
+	/* Body padding on small screens */
+	body {
+		padding-bottom: 4rem;
+	}
+	header {
+		padding: 5px 10px;
+		width: 100%;
+	}
+	header button {
+		width: 25%;
+		font-size: 10px;
+	}
+	.image-container {
+		width: 50%;
+	}
+
+	/* Main form adjustments */
+	.main {
+		width: 100%;
+		padding: 10px;
+		margin-top: 0.3rem;
+	}
+	/* Form width adjustments */
+	form {
+		width: 80%; /* Form takes up most of the screen */
+	}
+
+	/* Adjust font sizes for smaller devices */
+	h1 {
+		font-size: 20px;
+	}
+
+	#form-step-2 select {
+		padding: 5px;
+		font-size: 14px;
+		width: 100%;
+	}
+	#form-step-2 #radios {
+		width: 50%;
+	}
+	#form-step-1 select {
+		font-size: 14px;
+	}
+
+	button {
+		padding: 1px;
+		font-size: 10px;
+	}
+
+	/* Header */
+	.image-container {
+		width: 15%; /* Increase the logo size */
+	}
+
+	/* Make search form even more responsive */
+	.search form {
+		width: 100%;
+	}
+
+	/* Footer stays fixed but with more padding */
+	footer {
+		padding: 15px 0;
+		font-size: 14px;
+	}
+	/* Make buttons inside forms more touch-friendly */
+	form button {
+		padding: 12px;
+	}
+
+	/* Adjust input padding for easier typing on small devices */
+	input {
+		padding: 3px;
+		font-size: 16px;
+	}
 }

@@ -1,206 +1,165 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<link rel="stylesheet" href="/Css/style.css" />
-		<title>Learner Registration</title>
-	</head>
-	<body>
-		<header>
-			<div class="image-container">
-				<img src="/images/strive-high-logo.svg" alt="strive-high-logo" />
-			</div>
-			<button>View Website</button>
-		</header>
-		<div class="main">
-			<h1>Register A Learner</h1>
-			<form action="" method="POST">
-				<!-- <div class="form-container"> -->
-					<!-- <div class="personal-details"> -->
-						<input
-							type="text"
-							name="name_surname"
-							placeholder="Learner's name and surname:"
-							required
-						/>
-						<input
-							type="number"
-							name="cellPhoneNumber"
-							placeholder="Cell Phone Number"
-							required
-						/>
-						<select id="grade" name="grade" required>
-							<option value="" disabled selected>Grade</option>
-							<option value="8">Grade 8</option>
-							<option value="9">Grade 9</option>
-							<option value="10">Grade 10</option>
-							<option value="11">Grade 11</option>
-							<option value="12">Grade 12</option>
-						</select>
-						<label for="registration_date">Date of Registration:</label>
-						<input
-							type="date"
-							id="registration_date"
-							name="registration_date"
-							required
-						/>
-					<!-- </div> -->
-					<!-- <div class="bus-info"> -->
-						<!-- <label for="busRoute">Choose a bus route:</label>
-						<br />
-						<label>
-							<input type="radio" name="busRoute" value="1" required />
-							Rooihuiskraal - 1
-						</label>
-						<label>
-							<input type="radio" name="busRoute" value="2" required />
-							Wierdapark - 2
-						</label>
-						<label>
-							<input type="radio" name="busRoute" value="3" required />
-							Centurion - 3
-						</label>
-						<br />
-						<div class="bus-info-part2">
-							<label for="morningLocation">Morning Pickup Point:</label>
-							<select id="morningLocation" name="morningLocation" required>
-								<option value="" disabled selected>
-									Select Morning Pickup Point
-								</option>
-								<option value="">Corner of Panorama and Marabou Road</option>
-								<option value="">
-									Corner of Kolgansstraat and Skimmerstraat
-								</option>
-								<option value="">
-									Corner of Reddersburg Street and Mafeking Drive
-								</option>
-								<option value="">
-									Corner of Theuns van Niekerkstraat and Roosmarynstraat
-								</option>
-								<option value="">
-									Corner of Jasper Drive and Tieroog Street
-								</option>
-								<option value="">
-									Corner of Louise Street and Von Willich Drive
-								</option>
-							</select>
-							<label for="morningPickUpTime">Pick Up Time:</label>
-							<input
-								type="text"
-								id="morningPickUpTime"
-								name="morningPickUpTime"
-								readonly
-							/>
-							<label for="morningPickUpNumber">Pick Up Number:</label>
-							<input
-								type="text"
-								id="morningPickUpNumber"
-								name="morningPickUpNumber"
-								readonly
-							/>
-							<label for="MorningBusNumber">Your Morning Bus Number:</label>
-							<input
-								type="text"
-								id="MorningBusNumber"
-								name="MorningBusNumber"
-								readonly
-							/>
-						</div>
-						<label for="afternoonLocation">Afternoon Dropoff Point:</label>
-						<select id="afternoonLocation" name="afternoonLocation" required>
-							<option value="" disabled selected>
-								Select Afternoon Dropoff Point
-							</option>
-							<option value="">Corner of Panorama and Marabou Road</option>
-							<option value="">
-								Corner of Kolgansstraat and Skimmerstraat
-							</option>
-							<option value="">
-								Corner of Reddersburg Street and Mafeking Drive
-							</option>
-							<option value="">
-								Corner of Theuns van Niekerkstraat and Roosmarynstraat
-							</option>
-							<option value="">
-								Corner of Jasper Drive and Tieroog Street
-							</option>
-							<option value="">
-								Corner of Louise Street and Von Willich Drive
-							</option>
-						</select>
-						<label for="afternoonDropoffTime">Dropoff Time:</label>
-						<input
-							type="text"
-							id="afternoonDropoffTime"
-							name="afternoonDropoffTime"
-							readonly
-						/>
-						<label for="afternoonDropOffNumber">DropOff Number:</label>
-						<input
-							type="text"
-							id="afternoonDropOffNumber"
-							name="afternoonDropOffNumber"
-							readonly
-						/>
-						<label for="AfternoonBusNumber">Your Afternoon Bus Number:</label>
-						<input
-							type="text"
-							id="AfternoonBusNumber"
-							name="AfternoonBusNumber"
-							readonly
-						/>
-					<!- </div> -->
-				<!-- </div> -->
-				<br /> 
-				<button type="submit">Register Learner</button>
-			</form>
-			<a href="/">Logout</a>
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<link rel="stylesheet" href="/Css/style.css" />
+	<title>Learner Registration</title>
+</head>
+
+<body>
+	<header>
+		<div class="image-container">
+			<img src="/images/strive-high-logo.svg" alt="strive-high-logo" />
 		</div>
+		<button>View Website</button>
+	</header>
+	<div class="main">
+		<h1>Register A Learner</h1>
+		<a href="/AllLearnersDashboard"><button>Go to Learner Dashboard</button></a>
+		<a href="/logout"><button>Logout</button></a>
+		<form action="" method="POST" onsubmit="return validateForm()">
+			<div id="form-step-1">
+				<!-- Name and Surname -->
+				<input type="text" name="name_surname" placeholder="Learner's name and surname" pattern="[A-Za-z\s]+"
+					title="Only letters and spaces are allowed" required />
+				<!-- Cell Phone Number -->
+				<input type="text" name="cellPhoneNumber" placeholder="Cell Phone Number" pattern="^\d{10}$"
+					title="Enter a valid 10-digit phone number" required />
+
+				<select id="grade" name="grade" required>
+					<option value="" disabled selected>Grade</option>
+					<option value="8">Grade 8</option>
+					<option value="9">Grade 9</option>
+					<option value="10">Grade 10</option>
+					<option value="11">Grade 11</option>
+					<option value="12">Grade 12</option>
+				</select>
+				<label for="registration_date">Date of Registration:</label>
+				<input type="date" id="registration_date" name="registration_date" required />
+				<br />
+				<button type="button" onclick="showStep2()">Next</button>
+			</div>
+
+			<!-- Second Part (Bus Info) -->
+			<div id="form-step-2" style="display: none;">
+				<label for="busRoute">Choose a bus route:</label>
+				<div id="radios">
+					<label>Rooihuiskraal - 1</label>
+					<input type="radio" name="busRoute" value="1" required />
+					<label>Wierdapark - 2</label>
+					<input type="radio" name="busRoute" value="2" required /> 
+					<label> Centurion - 3</label>
+					<input type="radio" name="busRoute" value="3" required />
+				</div>
+
+				<!-- Morning Pickup Info -->
+				<label for="morningLocation">Morning Pickup Point:</label>
+				<select id="morningLocation" name="morningLocation" required>
+					<option value="" disabled selected>
+						Select Morning Pickup Point
+					</option>
+					<option value="1">Corner of Panorama and Marabou Road</option>
+					<option value="2">
+						Corner of Kolgansstraat and Skimmerstraat
+					</option>
+					<option value="3">
+						Corner of Reddersburg Street and Mafeking Drive
+					</option>
+					<option value="4">
+						Corner of Theuns van Niekerkstraat and Roosmarynstraat
+					</option>
+					<option value="5">
+						Corner of Jasper Drive and Tieroog Street
+					</option>
+					<option value="6">
+						Corner of Louise Street and Von Willich Drive
+					</option>
+				</select>
+
+				<!-- Afternoon Dropoff Info -->
+				<label for="afternoonLocation">Afternoon Dropoff Point:</label>
+				<select id="afternoonLocation" name="afternoonLocation" required>
+					<option value="" disabled selected>
+						Select Afternoon Dropoff Point
+					</option>
+					<option value="1">Corner of Panorama and Marabou Road</option>
+					<option value="2">
+						Corner of Kolgansstraat and Skimmerstraat
+					</option>
+					<option value="3">
+						Corner of Reddersburg Street and Mafeking Drive
+					</option>
+					<option value="4">
+						Corner of Theuns van Niekerkstraat and Roosmarynstraat
+					</option>
+					<option value="5">
+						Corner of Jasper Drive and Tieroog Street
+					</option>
+					<option value="6">
+						Corner of Louise Street and Von Willich Drive
+					</option>
+				</select>
+
+				<button type="submit">Register Learner</button>
+				<a href="/parent/login">Back</a>
+			</div>
+		</form>
+		<script>
+			function showStep2() {
+				document.getElementById("form-step-1").style.display = "none";
+				document.getElementById("form-step-2").style.display = "block";
+			}
+
+			window.onload = function () {
+				const urlParams = new URLSearchParams(window.location.search);
+				const status = urlParams.get('status');
+
+				if (status === 'success') {
+					alert("Learner registered successfully!");
+				} else if (status === 'error') {
+					alert("Error: Learner registration failed.");
+				}
+			};
+
+			function validateForm() {
+				const nameField = document.querySelector('input[name="name_surname"]');
+				const phoneField = document.querySelector('input[name="cellPhoneNumber"]');
+				const gradeField = document.querySelector('select[name="grade"]');
+
+				// Check if the name is at least 3 characters long
+				if (nameField.value.trim().length < 3) {
+					alert("Learner's name and surname must be at least 3 characters long.");
+					nameField.focus();
+					return false;
+				}
+
+				// Check if the phone number is exactly 10 digits
+				if (!/^\d{10}$/.test(phoneField.value)) {
+					alert("Please enter a valid 10-digit cell phone number.");
+					phoneField.focus();
+					return false;
+				}
+
+				// Check if a grade is selected
+				if (gradeField.value === "") {
+					alert("Please select a grade.");
+					gradeField.focus();
+					return false;
+				}
+
+				// If all validations pass, allow form submission
+				return true;
+			}
+
+		</script>
+
 		<footer>
 			<p>
 				Developed with ❤ by Kgotso Matuludi Copyright &copy; 2024 Strive High
 			</p>
 		</footer>
+</body>
 
-		 <script>
-        document.getElementById('morningLocation').addEventListener('change', function () {
-            const location = this.value;
-
-            fetch('/fetch-pickup-data', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                body: `location=${location}`
-            })
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('morningPickUpTime').value = data.PickupTime;
-                document.getElementById('morningPickUpNumber').value = data.PickUpNumber;
-                document.getElementById('MorningBusNumber').value = data.RouteNumber;
-            })
-            .catch(error => console.log(error));
-        });
-
-        document.getElementById('afternoonLocation').addEventListener('change', function () {
-            const location = this.value;
-
-            fetch('/fetch-dropoff-data', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                body: `location=${location}`
-            })
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('afternoonDropoffTime').value = data.DropoffTime;
-                document.getElementById('afternoonDropOffNumber').value = data.DropOffNumber;
-                document.getElementById('AfternoonBusNumber').value = data.RouteNumber;
-            })
-            .catch(error => console.log(error));
-        });
-    </script>
-	</body>
 </html>
