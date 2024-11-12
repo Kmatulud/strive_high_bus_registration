@@ -446,12 +446,10 @@ app.get("/admin/dashboard", (req, res) => {
 							// Render dashboard with all data
 							res.render("dashboard", {
 								learners: learners,
-								labels: JSON.stringify(allLabels) || "[]",
-								monthlyData: JSON.stringify(mergedMonthlyData) || "[]",
-								weeklyData: JSON.stringify(mergedWeeklyData) || "[]",
-								dailyData: JSON.stringify(mergedDailyData) || "[]",
-								acceptedCount: JSON.stringify(acceptedCount) || "[]",
-								waitingListCount: JSON.stringify(waitingListCount) || "[]",
+								labels: JSON.stringify(allLabels),
+								monthlyData: JSON.stringify(mergedMonthlyData),
+								weeklyData: JSON.stringify(mergedWeeklyData),
+								dailyData: JSON.stringify(mergedDailyData),
 							});
 						});
 					});
@@ -474,7 +472,16 @@ app.post("/admin/dashboard/search", (req, res) => {
 	const searchPattern = `%${searchTerm}%`;
 	connection.query(query, [searchPattern, searchPattern], (err, results) => {
 		if (err) throw err;
-		res.render("dashboard", { learners: results });
+		// dummy data
+		const monthlyData = JSON.stringify([10, 15, 20]);
+		const weeklyData = JSON.stringify([5, 7, 9]);
+		const dailyData = JSON.stringify([1, 2, 3]);
+		res.render("dashboard", {
+			learners: results,
+			monthlyData: monthlyData,
+			weeklyData: weeklyData,
+			dailyData: dailyData,
+		});
 	});
 });
 
@@ -548,11 +555,6 @@ app.post("/admin/action", (req, res) => {
 		});
 	}
 });
-
-// Format date using Moment.js
-function formatDate(date) {
-	return moment(date).format("DD MMM YYYY");
-}
 
 // Define the generateDailyReport function
 function generateDailyReport(callback) {
@@ -693,13 +695,13 @@ app.post("/generate-reports/daily", (req, res) => {
 
 app.post("/generate-reports/weekly", (req, res) => {
 	generateWeeklyReport((results) =>
-		res.render("weeklyReport", { busUsage: JSON.stringify(results) })
+		res.render("weeklyReport", { busUsage: results })
 	);
 });
 
 app.post("/generate-reports/monthly", (req, res) => {
 	generateMonthlyReport((results) =>
-		res.render("monthlyReport", { busUsage: JSON.stringify(results) })
+		res.render("monthlyReport", { busUsage: results })
 	);
 });
 
@@ -712,11 +714,23 @@ app.post("/search-reports/daily", (req, res) => {
     AND (Name_Surname LIKE ? OR CellPhoneNumber LIKE ?)
   `;
 	const searchPattern = `%${searchTerm}%`;
+
+
 	connection.query(query, [searchPattern, searchPattern], (err, results) => {
 		if (err) throw err;
-		res.render("dailyReport", { waitingList, busUsage });
+		// dummy data
+		const monthlyData = JSON.stringify([10, 15, 20]);
+		const weeklyData = JSON.stringify([5, 7, 9]);
+		const dailyData = JSON.stringify([1, 2, 3]);
+		res.render("dashboard", {
+			learners: results,
+			monthlyData: monthlyData,
+			weeklyData: weeklyData,
+			dailyData: dailyData,
+		});
 	});
 });
+
 
 app.post("/search-reports/weekly", (req, res) => {
 	const searchTerm = req.body.searchTerm;
@@ -728,7 +742,16 @@ app.post("/search-reports/weekly", (req, res) => {
 	const searchPattern = `%${searchTerm}%`;
 	connection.query(query, [searchPattern, searchPattern], (err, results) => {
 		if (err) throw err;
-		res.render("weeklyReport", { learners: results });
+		// dummy data
+		const monthlyData = JSON.stringify([10, 15, 20]);
+		const weeklyData = JSON.stringify([5, 7, 9]);
+		const dailyData = JSON.stringify([1, 2, 3]);
+		res.render("dashboard", {
+			learners: results,
+			monthlyData: monthlyData,
+			weeklyData: weeklyData,
+			dailyData: dailyData,
+		});
 	});
 });
 
@@ -743,7 +766,16 @@ app.post("/search-reports/monthly", (req, res) => {
 	const searchPattern = `%${searchTerm}%`;
 	connection.query(query, [searchPattern, searchPattern], (err, results) => {
 		if (err) throw err;
-		res.render("monthlyReport", { learners: results });
+		// dummy data
+		const monthlyData = JSON.stringify([10, 15, 20]);
+		const weeklyData = JSON.stringify([5, 7, 9]);
+		const dailyData = JSON.stringify([1, 2, 3]);
+		res.render("dashboard", {
+			learners: results,
+			monthlyData: monthlyData,
+			weeklyData: weeklyData,
+			dailyData: dailyData,
+		});
 	});
 });
 

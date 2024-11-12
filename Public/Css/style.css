@@ -107,10 +107,10 @@ table {
 }
 
 th, td {
-	padding: 10px;
-	text-align: left;
-	border: 1px solid #ddd;
-}
+	padding: 5px;
+	text-align: left; 
+	border: 1px solid #ddd; 
+ } 
 
 th {
 	background-color: #797575;
@@ -246,45 +246,7 @@ footer {
 		padding: 1px;
 		font-size: 25px;
 	}
-
-	/* Make table scrollable horizontally */
-	.table-container {
-		width: 100%;
-		overflow-x: auto;
-	}
-
-	/* Style table rows and cells to stack on mobile
-	table,
-	thead,
-	tbody,
-	th,
-	td,
-	tr {
-		display: block;
-		width: 100%;
-	}
-
-	th {
-		display: none; /* Hide table headers on small screens */
-	/*}
-
-	td {
-		display: block;
-		width: 100%;
-		text-align: right;
-		border-bottom: 1px solid #ddd;
-		position: relative;
-		padding-left: 50%;
-	}
-
-	td:before {
-		/* Create a pseudo-element to show the column name */
-		/* content: attr(data-label);
-		position: absolute;
-		left: 10px;
-		font-weight: bold;
-	} */ 
-
+	
 	/* Make buttons smaller and stack them */
 	form button {
 		width: 100%;
