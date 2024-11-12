@@ -159,7 +159,14 @@ app.get("/learner/signup", (req, res) => {
 
 // Learner actions
 app.post("/learner/signup", (req, res) => {
-	if (!req.session || !req.session.parent) return res.redirect("/parent/login");
+	// Check if the user is a parent or admin
+	const isAdmin = req.session && req.session.admin; // Check if admin session exists
+	const isParent = req.session && req.session.parent; // Check if parent session exists
+
+	// If neither admin nor parent is logged in, redirect to login
+	if (!isAdmin && !isParent) {
+		return res.redirect("/login");
+	}
 
 	const {
 		name_surname,
@@ -171,8 +178,16 @@ app.post("/learner/signup", (req, res) => {
 		registration_date,
 	} = req.body;
 
-	const parentId = req.session.parent.ParentID;
-	const parentEmail = req.session.parent.Email;
+	let parentId, parentEmail;
+
+	if (isParent) {
+		parentId = req.session.parent.ParentID;
+		parentEmail = req.session.parent.Email;
+	}
+	
+	if (!parentId && !isAdmin) {
+		return res.redirect("/learner/signup?status=error");
+	}
 
 	// Check if all required fields are filled
 	if (
@@ -183,7 +198,7 @@ app.post("/learner/signup", (req, res) => {
 		!busRoute ||
 		!morningLocation ||
 		!afternoonLocation ||
-		!parentId
+		(isParent && !parentId) // Ensure parentId exists for parent registration
 	) {
 		return res.redirect("/learner/signup?status=error");
 	}
@@ -211,7 +226,7 @@ app.post("/learner/signup", (req, res) => {
 				cellPhoneNumber,
 				grade,
 				registration_date,
-				parentId,
+				parentId || null, // Use parentId if available (for parent or admin)
 				learnerStatus,
 			],
 			(err, results) => {
@@ -243,12 +258,18 @@ app.post("/learner/signup", (req, res) => {
 
 						// Insert into busregistration table
 						const insertBusRegistrationQuery = `
-                            INSERT INTO busregistration (LearnerID, RouteID, PickupID, DropoffID) 
-                            VALUES (?, ?, ?, ?)
+                            INSERT INTO busregistration (LearnerID, RouteID, PickupID, DropoffID, RegistrationDate) 
+                            VALUES (?, ?, ?, ?, ?)
                         `;
 						connection.query(
 							insertBusRegistrationQuery,
-							[learnerId, busRoute, morningLocation, afternoonLocation],
+							[
+								learnerId,
+								busRoute,
+								morningLocation,
+								afternoonLocation,
+								registration_date,
+							],
 							(err) => {
 								if (err) {
 									console.error("Error registering bus:", err);
