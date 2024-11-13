@@ -68,6 +68,7 @@ app.post("/parent/signup", (req, res) => {
 				return res.send("Error inserting parent.");
 			}
 			res.redirect("/parent/login");
+			// alert("Login Successful!");
 		}
 	);
 });
@@ -88,6 +89,7 @@ app.post("/parent/login", (req, res) => {
 		if (results.length > 0) {
 			req.session.parent = results[0];
 			res.redirect("/learner/signup");
+			// alert("Login Successful!")
 		} else {
 			// Pass errorMessage to EJS template if credentials are incorrect
 			res.render("parentLogin", {
@@ -184,7 +186,7 @@ app.post("/learner/signup", (req, res) => {
 		parentId = req.session.parent.ParentID;
 		parentEmail = req.session.parent.Email;
 	}
-	
+
 	if (!parentId && !isAdmin) {
 		return res.redirect("/learner/signup?status=error");
 	}
@@ -354,7 +356,7 @@ app.get("/AlllearnersDashboard", (req, res) => {
 
 	const parentId = req.session.parent.ParentID;
 	const query = `
-		SELECT learner.LearnerID, learner.Name_Surname, learner.Grade, learner.Status, 
+		SELECT learner.LearnerID, learner.Name_Surname, learner.Grade, learner.RegistrationDate, learner.Status, 
 		       pickuppoint.PickupTime, pickuppoint.PickUpNumber, bus.BusNumber, 
 		       dropoffpoint.DropoffTime, dropoffpoint.DropOffNumber
 		FROM learner
@@ -736,7 +738,6 @@ app.post("/search-reports/daily", (req, res) => {
   `;
 	const searchPattern = `%${searchTerm}%`;
 
-
 	connection.query(query, [searchPattern, searchPattern], (err, results) => {
 		if (err) throw err;
 		// dummy data
@@ -751,7 +752,6 @@ app.post("/search-reports/daily", (req, res) => {
 		});
 	});
 });
-
 
 app.post("/search-reports/weekly", (req, res) => {
 	const searchTerm = req.body.searchTerm;

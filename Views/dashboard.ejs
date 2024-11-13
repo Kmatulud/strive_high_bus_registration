@@ -33,7 +33,7 @@
 		</header>
 		<h1>Admin Dashboard</h1>
 		<div class="search">
-			<form action="/admin/dashboard/search" method="POST">
+			<form action="/admin/dashboard/search" id="searchdash" method="POST">
 				<input
 					type="text"
 					name="searchTerm"
@@ -46,7 +46,9 @@
 			<p>Register New Learner<a href="/learner/signup"> Here</a></p>
 		</div>
 		<h2>Registered Learners</h2>
-
+		<% const formatDate = (date) => { const options = { day: 'numeric', month:
+		'short', year: 'numeric' }; return new
+		Date(date).toLocaleDateString('en-GB', options); } %>
 		<table border="1">
 			<thead>
 				<tr>
@@ -60,37 +62,36 @@
 				</tr>
 			</thead>
 			<tbody>
-				<% if (Array.isArray(learners) && learners.length > 0) { %> 
-					<% learners.forEach(learner => { %>
-						<tr>
-							<td><%= learner.LearnerID %></td>
-							<td><%= learner.Name_Surname %></td>
-							<td><%= learner.CellPhoneNumber %></td>
-							<td><%= learner.Grade %></td>
-							<td><%= learner.RegistrationDate %></td>
-							<td><%= learner.Status %></td>
-							<td>
-								<form action="/admin/action" method="post" style="display: inline">
-									<input
-										type="hidden"
-										name="learnerID"
-										value="<%= learner.LearnerID %>"
-									/>
-									<button type="submit" name="action" value="accept">
-										Approve
-									</button>
-									<button type="submit" name="action" value="waitlist">
-										Put on Waiting List
-									</button>
-									<button type="submit" name="action" value="delete">Delete</button>
-								</form>
-							</td>
-						</tr>
-					<% }) %>
-				<% } else { %>
-					<tr>
-						<td colspan="7">No registered learners</td>
-					</tr>
+				<% if (Array.isArray(learners) && learners.length > 0) { %> <%
+				learners.forEach(learner => { %>
+				<tr>
+					<td><%= learner.LearnerID %></td>
+					<td><%= learner.Name_Surname %></td>
+					<td><%= learner.CellPhoneNumber %></td>
+					<td><%= learner.Grade %></td>
+					<td><%= formatDate(learner.RegistrationDate) %></td>
+					<td><%= learner.Status %></td>
+					<td>
+						<form action="/admin/action" method="post" style="display: inline">
+							<input
+								type="hidden"
+								name="learnerID"
+								value="<%= learner.LearnerID %>"
+							/>
+							<button type="submit" name="action" value="accept">
+								Approve
+							</button>
+							<button type="submit" name="action" value="waitlist">
+								Put on Waiting List
+							</button>
+							<button type="submit" name="action" value="delete">Delete</button>
+						</form>
+					</td>
+				</tr>
+				<% }) %> <% } else { %>
+				<tr>
+					<td colspan="7">No registered learners</td>
+				</tr>
 				<% } %>
 			</tbody>
 		</table>
@@ -193,6 +194,7 @@
 		<h2>Generate MIS Reports</h2>
 		<form
 			action="/generate-reports/daily"
+			id="misreports"
 			method="post"
 			style="display: inline"
 		>
@@ -200,6 +202,7 @@
 		</form>
 		<form
 			action="/generate-reports/weekly"
+			id="misreports"
 			method="post"
 			style="display: inline"
 		>
@@ -207,6 +210,7 @@
 		</form>
 		<form
 			action="/generate-reports/monthly"
+			id="misreports"
 			method="post"
 			style="display: inline"
 		>

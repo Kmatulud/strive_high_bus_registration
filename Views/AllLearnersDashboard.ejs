@@ -32,6 +32,9 @@
 			<button>View Website</button>
 		</header>
 		<h1>Your Registered Learners</h1>
+		<% const formatDate = (date) => { const options = { day: 'numeric', month:
+		'short', year: 'numeric' }; return new
+		Date(date).toLocaleDateString('en-GB', options); } %>
 		<a href="/logout"><button>Logout</button></a>
 		<table>
 			<thead>
@@ -43,6 +46,7 @@
 					<th>Bus Number</th>
 					<th>Dropoff Time</th>
 					<th>Dropoff Number</th>
+					<th>Registration date</th>
 					<th>Status</th>
 					<th>Action</th>
 				</tr>
@@ -57,6 +61,7 @@
 					<td><%= learner.BusNumber %></td>
 					<td><%= learner.DropoffTime %></td>
 					<td><%= learner.DropOffNumber %></td>
+					<td><%= formatDate(learner.RegistrationDate) %></td>
 					<td><%= learner.Status || 'N/A' %></td>
 					<td>
 						<form

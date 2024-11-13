@@ -19,7 +19,7 @@
 		<h1>Register A Learner</h1>
 		<a href="/AllLearnersDashboard"><button>Go to Learner Dashboard</button></a>
 		<a href="/logout"><button>Logout</button></a>
-		<form action="" method="POST" onsubmit="return validateForm()">
+		<form action="" method="POST" id="form-step" onsubmit="return validateForm()">
 			<div id="form-step-1">
 				<!-- Name and Surname -->
 				<input type="text" name="name_surname" placeholder="Learner's name and surname" pattern="[A-Za-z\s]+"
@@ -122,7 +122,7 @@
 				nameError.style.display = isNameValid ? 'none' : 'inline';
 
 				// Check if the phone number is exactly 10 digits
-				const isPhoneValid = /^\d{10}$/.test(phoneField.value);
+				const isPhoneValid = /^0(?! \d+)[0-9]{9}$/.test(phoneField.value);
 				const phoneError = document.getElementById('phone-error');
 				phoneError.style.display = isPhoneValid ? 'none' : 'inline';
 

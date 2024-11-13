@@ -113,7 +113,8 @@ th, td {
  } 
 
 th {
-	background-color: #797575;
+	background-color: #d1cccc;
+	color: rgb(61, 60, 60);
 }
 
 .search form {

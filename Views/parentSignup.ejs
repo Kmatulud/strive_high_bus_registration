@@ -33,6 +33,7 @@
 			<form
 				action=""
 				method="POST"
+				id="parentsignup"
 				onsubmit="return validateRegistrationForm()"
 			>
 				<!-- Name and Surname -->
@@ -124,7 +125,7 @@
 				}
 
 				// Validate phone number (exactly 10 digits)
-				const isPhoneValid = /^\d{10}$/.test(phoneField.value);
+				const isPhoneValid = /^0(?! \d+)[0-9]{9}$/.test(phoneField.value);
 				if (!isPhoneValid) {
 					phoneField.classList.add("invalid");
 					phoneField.classList.remove("valid");
@@ -136,7 +137,7 @@
 				}
 
 				// Validate email (simple regex check)
-				const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(
+				const isEmailValid = /^[A-Za-z0-9\._\-[0-9]*[@][A-Za-z]*([\.][a-z]{2,6}){1,}$/.test(
 					emailField.value
 				);
 				if (!isEmailValid) {
@@ -178,9 +179,9 @@
 				const emailField = document.querySelector('input[name="email"]');
 				const passwordField = document.querySelector('input[name="password"]');
 
-				const isNameValid = nameField.value.trim().length >= 3;
-				const isPhoneValid = /^\d{10}$/.test(phoneField.value);
-				const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(
+				const isNameValid = nameField.value.trim().length >= 4;
+				const isPhoneValid = /^0(?! \d+)[0-9]{9}$/.test(phoneField.value);
+				const isEmailValid = /^[A-Za-z0-9\._\-[0-9]*[@][A-Za-z]*([\.][a-z]{2,6}){1,}$/.test(
 					emailField.value
 				);
 				const isPasswordValid = passwordField.value.length >= 8;

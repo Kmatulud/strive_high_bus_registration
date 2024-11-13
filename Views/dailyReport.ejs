@@ -42,9 +42,9 @@
 		</div>
 
 		<!-- Format the date -->
-		<% const formatDate = (date) => { const options = { year: 'numeric', month:
-		'short', day: 'numeric' }; return new Date(date).toLocaleDateString('en-GB',
-		options); } %>
+		<% const formatDate = (date) => { const options = { day: 'numeric', month:
+		'short', year: 'numeric' }; return new
+		Date(date).toLocaleDateString('en-GB', options); } %>
 
 		<table border="1">
 			<thead>
@@ -101,6 +101,7 @@
 					<th>Grade</th>
 					<th>Cell Phone Number</th>
 					<td>Registration Date</td>
+					<td>Bus Number</td>
 					<th>Morning Use</th>
 					<th>Afternoon use</th>
 					<th>Status</th>
@@ -115,11 +116,12 @@
 					<td><%= bus.Grade %></td>
 					<td><%= bus.CellPhoneNumber %></td>
 					<td><%= formatDate(bus.RegistrationDate) %></td>
+					<td><%= bus.BusNumber %></td>
 					<td><%= bus.morning_use %></td>
 					<td><%= bus.afternoon_use %></td>
 					<td><%= bus.Status %></td>
 					<td>
-						<form action="/admin/action" method="post" style="display: inline">
+						<form action="/admin/action" id="buttonsform" method="post" style="display: inline">
 							<input
 								type="hidden"
 								name="learnerID"
